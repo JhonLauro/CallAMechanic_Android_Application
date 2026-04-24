@@ -91,12 +91,9 @@ class AdminDashboardActivity : AppCompatActivity() {
                         adapter.updateData(appointments)
 
                         binding.tvTotalJobs.text = appointments.size.toString()
-                        binding.tvPendingJobs.text =
-                            appointments.count { it.status == "PENDING" }.toString()
-                        binding.tvInProgressJobs.text =
-                            appointments.count { it.status == "IN_PROGRESS" }.toString()
-                        binding.tvCompletedJobs.text =
-                            appointments.count { it.status == "COMPLETED" }.toString()
+                        binding.tvPendingJobs.text = appointments.count { it.status == "PENDING" }.toString()
+                        binding.tvInProgressJobs.text = appointments.count { it.status == "IN_PROGRESS" }.toString()
+                        binding.tvCompletedJobs.text = appointments.count { it.status == "COMPLETED" }.toString()
 
                         if (appointments.isEmpty()) {
                             binding.tvEmptyStateAdmin.visibility = View.VISIBLE

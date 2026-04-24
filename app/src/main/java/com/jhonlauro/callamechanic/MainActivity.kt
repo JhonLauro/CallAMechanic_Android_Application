@@ -21,11 +21,11 @@ class MainActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
 
         if (sessionManager.isLoggedIn()) {
-            val nextIntent = when (sessionManager.getRole()?.uppercase()) {
+            val intent = when (sessionManager.getRole()?.uppercase()) {
                 "ADMIN" -> Intent(this, AdminDashboardActivity::class.java)
                 else -> Intent(this, ClientDashboardActivity::class.java)
             }
-            startActivity(nextIntent)
+            startActivity(intent)
             finish()
             return
         }

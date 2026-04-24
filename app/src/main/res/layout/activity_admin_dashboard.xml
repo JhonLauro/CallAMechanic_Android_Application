@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="18dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,27 +17,60 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Call-A-Mechanic"
-                android:textColor="@color/cam_text"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/bg_toolbar_icon"
+                    android:padding="9dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_wrench" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Call-A-Mechanic"
+                    android:textColor="@color/cam_text"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvRole"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/bg_chip_admin"
-                android:paddingLeft="12dp"
+                android:paddingStart="10dp"
                 android:paddingTop="6dp"
-                android:paddingRight="12dp"
+                android:paddingEnd="10dp"
                 android:paddingBottom="6dp"
                 android:text="ADMIN"
                 android:textColor="@color/cam_admin"
+                android:textSize="12sp"
                 android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/btnOpenProfile"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_profile_icon_button"
+                android:backgroundTint="@null"
+                android:contentDescription="Open Profile"
+                android:padding="10dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_person" />
         </LinearLayout>
 
         <TextView
@@ -61,7 +94,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -73,9 +106,15 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_wrench" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Total Jobs"
                     android:textColor="@color/cam_subtext" />
 
@@ -83,7 +122,7 @@
                     android:id="@+id/tvTotalJobs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:text="0"
                     android:textColor="@color/cam_text"
                     android:textSize="28sp"
@@ -99,9 +138,15 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_clock" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Pending Jobs"
                     android:textColor="@color/cam_subtext" />
 
@@ -109,7 +154,7 @@
                     android:id="@+id/tvPendingJobs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:text="0"
                     android:textColor="@color/cam_text"
                     android:textSize="28sp"
@@ -132,9 +177,15 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_refresh" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="In Progress"
                     android:textColor="@color/cam_subtext" />
 
@@ -142,7 +193,7 @@
                     android:id="@+id/tvInProgressJobs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:text="0"
                     android:textColor="@color/cam_text"
                     android:textSize="28sp"
@@ -158,9 +209,15 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_shield" />
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Finished Jobs"
                     android:textColor="@color/cam_subtext" />
 
@@ -168,7 +225,7 @@
                     android:id="@+id/tvCompletedJobs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="4dp"
                     android:text="0"
                     android:textColor="@color/cam_text"
                     android:textSize="28sp"
@@ -179,62 +236,59 @@
         <Button
             android:id="@+id/btnCreateMechanic"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="50dp"
             android:layout_marginTop="18dp"
             android:background="@drawable/bg_primary_button"
             android:backgroundTint="@null"
+            android:drawableStart="@drawable/ic_person_add"
+            android:drawablePadding="8dp"
             android:text="Create New Mechanic"
             android:textAllCaps="false"
-            android:textColor="@color/cam_white"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnUserRegistry"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/bg_secondary_button"
+            android:background="@drawable/bg_primary_button"
             android:backgroundTint="@null"
+            android:drawableStart="@drawable/ic_person"
+            android:drawablePadding="8dp"
             android:text="User Registry"
             android:textAllCaps="false"
-            android:textColor="@color/cam_text" />
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/btnRefreshAdmin"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
+            android:layout_height="50dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/bg_secondary_button"
+            android:background="@drawable/bg_primary_button"
             android:backgroundTint="@null"
+            android:drawableStart="@drawable/ic_refresh"
+            android:drawablePadding="8dp"
             android:text="Refresh Data"
             android:textAllCaps="false"
-            android:textColor="@color/cam_text" />
-
-        <Button
-            android:id="@+id/btnOpenProfile"
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/bg_secondary_button"
-            android:backgroundTint="@null"
-            android:text="My Profile"
-            android:textAllCaps="false"
-            android:textColor="@color/cam_text" />
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="22dp"
             android:text="Master Service Queue"
             android:textColor="@color/cam_text"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAdminAppointments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="12dp"
             android:nestedScrollingEnabled="false" />
 
         <ProgressBar
@@ -258,8 +312,8 @@
         <Button
             android:id="@+id/btnLogoutAdmin"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginTop="22dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/bg_danger_outline"
             android:backgroundTint="@null"
             android:text="Logout"
