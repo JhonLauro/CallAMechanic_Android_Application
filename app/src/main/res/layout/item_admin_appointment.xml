@@ -2,8 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:background="#F8F8F8"
+    android:layout_marginBottom="14dp"
+    android:background="@drawable/bg_stat_card"
     android:orientation="vertical"
     android:padding="16dp">
 
@@ -11,42 +11,55 @@
         android:id="@+id/tvJobIdAdmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="#123"
+        android:text="#2"
+        android:textColor="@color/cam_text"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvClientName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="Client Name" />
+        android:layout_marginTop="8dp"
+        android:text="Client Name"
+        android:textColor="@color/cam_text"
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/tvVehicleInfo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="Vehicle Info" />
+        android:layout_marginTop="4dp"
+        android:text="Vehicle"
+        android:textColor="@color/cam_subtext" />
 
     <TextView
         android:id="@+id/tvServiceTypeAdmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="Service Type" />
+        android:layout_marginTop="4dp"
+        android:text="Service Type"
+        android:textColor="@color/cam_subtext" />
 
     <TextView
         android:id="@+id/tvMechanicAdmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:text="Unassigned" />
+        android:layout_marginTop="4dp"
+        android:text="Mechanic"
+        android:textColor="@color/cam_subtext" />
 
     <TextView
         android:id="@+id/tvStatusAdmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Pending"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_chip_blue"
+        android:paddingLeft="12dp"
+        android:paddingTop="6dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="6dp"
+        android:text="In Progress"
+        android:textColor="@color/cam_primary"
         android:textStyle="bold" />
 </LinearLayout>

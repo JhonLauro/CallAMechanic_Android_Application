@@ -3,11 +3,10 @@ package com.jhonlauro.callamechanic.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.LoginRequest
 import com.jhonlauro.callamechanic.data.model.LoginResponse
-import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.repository.AuthRepository
 import com.jhonlauro.callamechanic.databinding.ActivityLoginBinding
 import com.jhonlauro.callamechanic.session.SessionManager
@@ -37,6 +36,10 @@ class LoginActivity : AppCompatActivity() {
 
         binding.tvGoRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+        }
+
+        binding.btnBackHome.setOnClickListener {
+            finish()
         }
     }
 
@@ -73,35 +76,33 @@ class LoginActivity : AppCompatActivity() {
 
                 if (response.isSuccessful && response.body()?.success == true && response.body()?.data != null) {
                     val loginData = response.body()!!.data!!
+
                     sessionManager.saveSession(
                         token = loginData.token,
                         role = loginData.user.role,
                         userId = loginData.user.id,
-                        fullName = loginData.user.fullName
+                        fullName = loginData.user.fullName,
+                        email = loginData.user.email,
+                        adminId = loginData.user.adminId,
+                        phoneNumber = loginData.user.phoneNumber
                     )
 
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Login successful",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    when (loginData.user.role.uppercase()) {
-                        "ADMIN" -> {
-                            startActivity(Intent(this@LoginActivity, AdminDashboardActivity::class.java))
-                        }
-                        else -> {
-                            startActivity(Intent(this@LoginActivity, ClientDashboardActivity::class.java))
-                        }
+                    if (loginData.user.role.uppercase() == "ADMIN") {
+                        startActivity(Intent(this@LoginActivity, AdminDashboardActivity::class.java))
+                    } else {
+                        startActivity(Intent(this@LoginActivity, ClientDashboardActivity::class.java))
                     }
                     finish()
                 } else {
-                    binding.tvError.text = "Login failed. Check your credentials."
+                    binding.tvError.text = response.errorBody()?.string() ?: "Login failed"
                     binding.tvError.visibility = View.VISIBLE
                 }
             }
 
-            override fun onFailure(call: Call<ApiMessageResponse<LoginResponse>>, t: Throwable) {
+            override fun onFailure(
+                call: Call<ApiMessageResponse<LoginResponse>>,
+                t: Throwable
+            ) {
                 binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
                 binding.tvError.text = t.message ?: "Something went wrong"

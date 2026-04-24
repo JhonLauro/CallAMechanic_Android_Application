@@ -11,6 +11,7 @@ import com.jhonlauro.callamechanic.data.repository.AppointmentRepository
 import com.jhonlauro.callamechanic.databinding.ActivityAdminDashboardBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
+import com.jhonlauro.callamechanic.ui.profile.ProfileActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +36,7 @@ class AdminDashboardActivity : AppCompatActivity() {
         binding.rvAdminAppointments.adapter = adapter
 
         binding.tvAdminWelcome.text = "Welcome, ${sessionManager.getFullName() ?: "Admin"}"
+        binding.tvRole.text = sessionManager.getRole() ?: "ADMIN"
 
         binding.btnUserRegistry.setOnClickListener {
             startActivity(Intent(this, UserRegistryActivity::class.java))
@@ -46,6 +48,10 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         binding.btnRefreshAdmin.setOnClickListener {
             loadAppointments()
+        }
+
+        binding.btnOpenProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
         binding.btnLogoutAdmin.setOnClickListener {
@@ -62,6 +68,7 @@ class AdminDashboardActivity : AppCompatActivity() {
 
     private fun loadAppointments() {
         val token = sessionManager.getToken()
+
         if (token.isNullOrEmpty()) {
             binding.tvEmptyStateAdmin.visibility = View.VISIBLE
             binding.tvEmptyStateAdmin.text = "No active session found"
@@ -84,9 +91,12 @@ class AdminDashboardActivity : AppCompatActivity() {
                         adapter.updateData(appointments)
 
                         binding.tvTotalJobs.text = appointments.size.toString()
-                        binding.tvPendingJobs.text = appointments.count { it.status == "PENDING" }.toString()
-                        binding.tvInProgressJobs.text = appointments.count { it.status == "IN_PROGRESS" }.toString()
-                        binding.tvCompletedJobs.text = appointments.count { it.status == "COMPLETED" }.toString()
+                        binding.tvPendingJobs.text =
+                            appointments.count { it.status == "PENDING" }.toString()
+                        binding.tvInProgressJobs.text =
+                            appointments.count { it.status == "IN_PROGRESS" }.toString()
+                        binding.tvCompletedJobs.text =
+                            appointments.count { it.status == "COMPLETED" }.toString()
 
                         if (appointments.isEmpty()) {
                             binding.tvEmptyStateAdmin.visibility = View.VISIBLE
