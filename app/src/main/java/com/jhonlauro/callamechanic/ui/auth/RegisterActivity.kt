@@ -3,6 +3,7 @@ package com.jhonlauro.callamechanic.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.LoginResponse
@@ -35,7 +36,6 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         binding.tvGoLogin.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
     }
@@ -55,7 +55,13 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         if (!email.contains("@")) {
-            binding.tvError.text = "Invalid email"
+            binding.tvError.text = "Enter a valid email"
+            binding.tvError.visibility = View.VISIBLE
+            return
+        }
+
+        if (password.length < 8) {
+            binding.tvError.text = "Password must be at least 8 characters"
             binding.tvError.visibility = View.VISIBLE
             return
         }
@@ -75,18 +81,26 @@ class RegisterActivity : AppCompatActivity() {
 
                 if (response.isSuccessful && response.body()?.success == true && response.body()?.data != null) {
                     val registerData = response.body()!!.data!!
-
                     sessionManager.saveSession(
-                        registerData.token,
-                        registerData.user.role,
-                        registerData.user.id,
-                        registerData.user.fullName
+                        token = registerData.token,
+                        role = registerData.user.role,
+                        userId = registerData.user.id,
+                        fullName = registerData.user.fullName
                     )
 
-                    if (registerData.user.role.uppercase() == "ADMIN") {
-                        startActivity(Intent(this@RegisterActivity, AdminDashboardActivity::class.java))
-                    } else {
-                        startActivity(Intent(this@RegisterActivity, ClientDashboardActivity::class.java))
+                    Toast.makeText(
+                        this@RegisterActivity,
+                        "Registration successful",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    when (registerData.user.role.uppercase()) {
+                        "ADMIN" -> {
+                            startActivity(Intent(this@RegisterActivity, AdminDashboardActivity::class.java))
+                        }
+                        else -> {
+                            startActivity(Intent(this@RegisterActivity, ClientDashboardActivity::class.java))
+                        }
                     }
                     finishAffinity()
                 } else {
@@ -95,10 +109,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(
-                call: Call<ApiMessageResponse<LoginResponse>>,
-                t: Throwable
-            ) {
+            override fun onFailure(call: Call<ApiMessageResponse<LoginResponse>>, t: Throwable) {
                 binding.progressBar.visibility = View.GONE
                 binding.btnRegister.isEnabled = true
                 binding.tvError.text = t.message ?: "Something went wrong"
