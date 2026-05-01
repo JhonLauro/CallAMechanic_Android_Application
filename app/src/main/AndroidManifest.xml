@@ -19,6 +19,8 @@
         <activity android:name=".ui.client.BookAppointmentActivity" />
         <activity android:name=".ui.admin.UserRegistryActivity" />
         <activity android:name=".ui.admin.CreateMechanicActivity" />
+        <activity android:name=".ui.mechanic.MechanicDashboardActivity" />
+        <activity android:name=".ui.appointment.AppointmentDetailsActivity" />
 
         <activity
             android:name=".MainActivity"

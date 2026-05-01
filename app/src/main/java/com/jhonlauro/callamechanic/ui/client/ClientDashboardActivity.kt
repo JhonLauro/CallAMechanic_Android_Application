@@ -10,7 +10,9 @@ import com.jhonlauro.callamechanic.data.model.Appointment
 import com.jhonlauro.callamechanic.data.repository.AppointmentRepository
 import com.jhonlauro.callamechanic.databinding.ActivityClientDashboardBinding
 import com.jhonlauro.callamechanic.session.SessionManager
+import com.jhonlauro.callamechanic.ui.appointment.AppointmentDetailsActivity
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
+import com.jhonlauro.callamechanic.ui.common.ProfileDropdown
 import com.jhonlauro.callamechanic.ui.profile.ProfileActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,26 +33,24 @@ class ClientDashboardActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
         appointmentRepository = AppointmentRepository()
 
-        adapter = AppointmentAdapter(emptyList())
+        adapter = AppointmentAdapter(emptyList()) { appointment ->
+            openAppointmentDetails(appointment)
+        }
 
         binding.rvAppointments.layoutManager = LinearLayoutManager(this)
         binding.rvAppointments.adapter = adapter
 
         binding.tvWelcome.text = "Welcome, ${sessionManager.getFullName() ?: "Client"}"
 
-        binding.btnLogout.setOnClickListener {
-            sessionManager.clearSession()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finishAffinity()
-        }
-
         binding.btnBookAppointment.setOnClickListener {
             startActivity(Intent(this, BookAppointmentActivity::class.java))
         }
 
         binding.btnProfile.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
+            showProfileMenu()
         }
+
+        binding.btnLogout.visibility = View.GONE
     }
 
     override fun onResume() {
@@ -86,7 +86,7 @@ class ClientDashboardActivity : AppCompatActivity() {
                         }
 
                         val completedCount = appointments.count {
-                            it.status == "COMPLETED"
+                            it.status == "COMPLETED" || it.status == "FINISHED"
                         }
 
                         binding.tvActiveServices.text = activeCount.toString()
@@ -114,5 +114,33 @@ class ClientDashboardActivity : AppCompatActivity() {
                     binding.tvEmptyState.text = t.message ?: "Something went wrong"
                 }
             })
+    }
+
+    private fun showProfileMenu() {
+        ProfileDropdown.show(
+            anchor = binding.btnProfile,
+            onViewProfile = { startActivity(Intent(this, ProfileActivity::class.java)) },
+            onSignOut = { signOut() }
+        )
+    }
+
+    private fun signOut() {
+        sessionManager.clearSession()
+        startActivity(Intent(this, LoginActivity::class.java))
+        finishAffinity()
+    }
+
+    private fun openAppointmentDetails(appointment: Appointment) {
+        startActivity(Intent(this, AppointmentDetailsActivity::class.java).apply {
+            putExtra(AppointmentDetailsActivity.EXTRA_ID, appointment.id)
+            putExtra(AppointmentDetailsActivity.EXTRA_STATUS, appointment.status)
+            putExtra(AppointmentDetailsActivity.EXTRA_CLIENT, appointment.client?.fullName ?: sessionManager.getFullName())
+            putExtra(AppointmentDetailsActivity.EXTRA_CONTACT, appointment.client?.phoneNumber ?: sessionManager.getPhoneNumber())
+            putExtra(AppointmentDetailsActivity.EXTRA_VEHICLE, appointment.vehicleInfo)
+            putExtra(AppointmentDetailsActivity.EXTRA_SERVICE_TYPE, appointment.serviceType)
+            putExtra(AppointmentDetailsActivity.EXTRA_PROBLEM, appointment.problemDescription)
+            putExtra(AppointmentDetailsActivity.EXTRA_SCHEDULE, appointment.scheduledDate)
+            putExtra(AppointmentDetailsActivity.EXTRA_MECHANIC, appointment.mechanic?.fullName ?: "Awaiting Assignment")
+        })
     }
 }

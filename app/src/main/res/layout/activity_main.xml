@@ -44,20 +44,24 @@
                     android:layout_marginStart="10dp"
                     android:text="Call-A-Mechanic"
                     android:textColor="@color/cam_text"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <Button
+            <TextView
                 android:id="@+id/btnSignIn"
-                android:text="Sign In"
                 android:layout_width="wrap_content"
                 android:layout_height="44dp"
                 android:background="@drawable/bg_secondary_button"
-                android:backgroundTint="@null"
+                android:clickable="true"
                 android:drawableStart="@drawable/ic_person"
                 android:drawablePadding="6dp"
-                android:textAllCaps="false"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="92dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="Sign In"
                 android:textColor="@color/cam_primary" />
         </LinearLayout>
 
@@ -67,7 +71,10 @@
             android:layout_marginTop="22dp"
             android:background="@drawable/bg_stat_card"
             android:orientation="vertical"
-            android:padding="22dp">
+            android:paddingStart="20dp"
+            android:paddingTop="24dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp">
 
             <TextView
                 android:layout_width="match_parent"
@@ -75,7 +82,7 @@
                 android:gravity="center"
                 android:text="Professional Auto Repair"
                 android:textColor="@color/cam_text"
-                android:textSize="28sp"
+                android:textSize="25sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -84,7 +91,7 @@
                 android:gravity="center"
                 android:text="Made Simple"
                 android:textColor="@color/cam_primary"
-                android:textSize="28sp"
+                android:textSize="25sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -94,7 +101,7 @@
                 android:gravity="center"
                 android:text="Connect with certified mechanics in your area for fast, reliable, and affordable auto repair services."
                 android:textColor="@color/cam_subtext"
-                android:textSize="15sp" />
+                android:textSize="14sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -103,28 +110,34 @@
                 android:gravity="center"
                 android:orientation="horizontal">
 
-                <Button
+                <TextView
                     android:id="@+id/btnBookService"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="48dp"
+                    android:layout_weight="1"
                     android:background="@drawable/bg_primary_button"
-                    android:backgroundTint="@null"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
                     android:paddingStart="18dp"
                     android:paddingEnd="18dp"
                     android:text="Book a Service"
-                    android:textAllCaps="false"
                     android:textColor="@android:color/white"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/btnGetStarted"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="10dp"
+                    android:layout_weight="1"
                     android:background="@drawable/bg_secondary_button"
-                    android:backgroundTint="@null"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="18dp"
                     android:text="Get Started"
-                    android:textAllCaps="false"
                     android:textColor="@color/cam_primary" />
             </LinearLayout>
         </LinearLayout>

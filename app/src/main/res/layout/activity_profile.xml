@@ -11,28 +11,64 @@
         android:orientation="vertical"
         android:padding="18dp">
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="44dp"
-            android:background="@drawable/bg_secondary_button"
-            android:backgroundTint="@null"
-            android:drawableStart="@drawable/ic_arrow_back"
-            android:drawablePadding="6dp"
-            android:text="Back to Dashboard"
-            android:textAllCaps="false"
-            android:textColor="@color/cam_primary" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_toolbar_icon"
+                android:padding="8dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="App Logo"
+                    android:src="@drawable/ic_cam_logo" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Call-A-Mechanic"
+                android:textColor="@color/cam_text"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_secondary_button"
+                android:clickable="true"
+                android:drawableStart="@drawable/ic_arrow_back"
+                android:drawablePadding="6dp"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="92dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="Back"
+                android:textColor="@color/cam_primary" />
+        </LinearLayout>
 
         <TextView
+            android:id="@+id/tvProfileTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Admin Profile"
+            android:text="My Profile"
             android:textColor="@color/cam_text"
             android:textSize="28sp"
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvProfileSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
@@ -77,7 +113,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="ADM-001"
+                android:text="ID"
                 android:textColor="@color/cam_subtext"
                 android:textSize="15sp" />
 
@@ -115,17 +151,18 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <Button
+            <TextView
                 android:id="@+id/btnEditProfile"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/bg_secondary_button"
-                android:backgroundTint="@null"
                 android:drawableStart="@drawable/ic_person"
                 android:drawablePadding="6dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
                 android:text="Edit Profile"
-                android:textAllCaps="false"
                 android:textColor="@color/cam_text" />
         </LinearLayout>
 
@@ -196,28 +233,30 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <Button
+            <TextView
                 android:id="@+id/btnChangePassword"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="14dp"
                 android:background="@drawable/bg_secondary_button"
-                android:backgroundTint="@null"
                 android:drawableStart="@drawable/ic_shield"
                 android:drawablePadding="6dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
                 android:text="Change Password"
-                android:textAllCaps="false"
                 android:textColor="@color/cam_text" />
 
-            <Button
+            <TextView
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="12dp"
                 android:background="@drawable/bg_danger_outline"
-                android:backgroundTint="@null"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
                 android:text="Sign Out"
-                android:textAllCaps="false"
                 android:textColor="@color/cam_danger"
                 android:textStyle="bold" />
         </LinearLayout>

@@ -10,7 +10,9 @@ import com.jhonlauro.callamechanic.data.model.Appointment
 import com.jhonlauro.callamechanic.data.repository.AppointmentRepository
 import com.jhonlauro.callamechanic.databinding.ActivityAdminDashboardBinding
 import com.jhonlauro.callamechanic.session.SessionManager
+import com.jhonlauro.callamechanic.ui.appointment.AppointmentDetailsActivity
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
+import com.jhonlauro.callamechanic.ui.common.ProfileDropdown
 import com.jhonlauro.callamechanic.ui.profile.ProfileActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,7 +32,9 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
         appointmentRepository = AppointmentRepository()
-        adapter = AdminAppointmentAdapter(emptyList())
+        adapter = AdminAppointmentAdapter(emptyList()) { appointment ->
+            openAppointmentDetails(appointment)
+        }
 
         binding.rvAdminAppointments.layoutManager = LinearLayoutManager(this)
         binding.rvAdminAppointments.adapter = adapter
@@ -51,14 +55,10 @@ class AdminDashboardActivity : AppCompatActivity() {
         }
 
         binding.btnOpenProfile.setOnClickListener {
-            startActivity(Intent(this, ProfileActivity::class.java))
+            showProfileMenu()
         }
 
-        binding.btnLogoutAdmin.setOnClickListener {
-            sessionManager.clearSession()
-            startActivity(Intent(this, LoginActivity::class.java))
-            finishAffinity()
-        }
+        binding.btnLogoutAdmin.visibility = View.GONE
     }
 
     override fun onResume() {
@@ -93,7 +93,7 @@ class AdminDashboardActivity : AppCompatActivity() {
                         binding.tvTotalJobs.text = appointments.size.toString()
                         binding.tvPendingJobs.text = appointments.count { it.status == "PENDING" }.toString()
                         binding.tvInProgressJobs.text = appointments.count { it.status == "IN_PROGRESS" }.toString()
-                        binding.tvCompletedJobs.text = appointments.count { it.status == "COMPLETED" }.toString()
+                        binding.tvCompletedJobs.text = appointments.count { it.status == "COMPLETED" || it.status == "FINISHED" }.toString()
 
                         if (appointments.isEmpty()) {
                             binding.tvEmptyStateAdmin.visibility = View.VISIBLE
@@ -116,5 +116,33 @@ class AdminDashboardActivity : AppCompatActivity() {
                     binding.tvEmptyStateAdmin.text = t.message ?: "Something went wrong"
                 }
             })
+    }
+
+    private fun showProfileMenu() {
+        ProfileDropdown.show(
+            anchor = binding.btnOpenProfile,
+            onViewProfile = { startActivity(Intent(this, ProfileActivity::class.java)) },
+            onSignOut = { signOut() }
+        )
+    }
+
+    private fun signOut() {
+        sessionManager.clearSession()
+        startActivity(Intent(this, LoginActivity::class.java))
+        finishAffinity()
+    }
+
+    private fun openAppointmentDetails(appointment: Appointment) {
+        startActivity(Intent(this, AppointmentDetailsActivity::class.java).apply {
+            putExtra(AppointmentDetailsActivity.EXTRA_ID, appointment.id)
+            putExtra(AppointmentDetailsActivity.EXTRA_STATUS, appointment.status)
+            putExtra(AppointmentDetailsActivity.EXTRA_CLIENT, appointment.client?.fullName)
+            putExtra(AppointmentDetailsActivity.EXTRA_CONTACT, appointment.client?.phoneNumber)
+            putExtra(AppointmentDetailsActivity.EXTRA_VEHICLE, appointment.vehicleInfo)
+            putExtra(AppointmentDetailsActivity.EXTRA_SERVICE_TYPE, appointment.serviceType)
+            putExtra(AppointmentDetailsActivity.EXTRA_PROBLEM, appointment.problemDescription)
+            putExtra(AppointmentDetailsActivity.EXTRA_SCHEDULE, appointment.scheduledDate)
+            putExtra(AppointmentDetailsActivity.EXTRA_MECHANIC, appointment.mechanic?.fullName ?: "Unassigned")
+        })
     }
 }

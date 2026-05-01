@@ -16,6 +16,7 @@ class SessionManager(context: Context) {
         fullName: String,
         email: String? = null,
         adminId: String? = null,
+        mechanicId: String? = null,
         phoneNumber: String? = null
     ) {
         prefs.edit()
@@ -25,6 +26,7 @@ class SessionManager(context: Context) {
             .putString(Constants.KEY_FULL_NAME, fullName)
             .putString(Constants.KEY_EMAIL, email)
             .putString(Constants.KEY_ADMIN_ID, adminId)
+            .putString(Constants.KEY_MECHANIC_ID, mechanicId)
             .putString(Constants.KEY_PHONE_NUMBER, phoneNumber)
             .apply()
     }
@@ -35,9 +37,20 @@ class SessionManager(context: Context) {
     fun getFullName(): String? = prefs.getString(Constants.KEY_FULL_NAME, null)
     fun getEmail(): String? = prefs.getString(Constants.KEY_EMAIL, null)
     fun getAdminId(): String? = prefs.getString(Constants.KEY_ADMIN_ID, null)
+    fun getMechanicId(): String? = prefs.getString(Constants.KEY_MECHANIC_ID, null)
     fun getPhoneNumber(): String? = prefs.getString(Constants.KEY_PHONE_NUMBER, null)
 
     fun isLoggedIn(): Boolean = !getToken().isNullOrEmpty()
+
+    fun updateProfileInfo(
+        fullName: String,
+        phoneNumber: String?
+    ) {
+        prefs.edit()
+            .putString(Constants.KEY_FULL_NAME, fullName)
+            .putString(Constants.KEY_PHONE_NUMBER, phoneNumber)
+            .apply()
+    }
 
     fun clearSession() {
         prefs.edit().clear().apply()

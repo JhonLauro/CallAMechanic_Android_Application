@@ -17,53 +17,46 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_toolbar_icon"
+                android:padding="9dp">
 
-                <FrameLayout
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@drawable/bg_toolbar_icon"
-                    android:padding="9dp">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="App Logo"
-                        android:src="@drawable/ic_cam_logo" />
-                </FrameLayout>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="Call-A-Mechanic"
-                    android:textColor="@color/cam_text"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="App Logo"
+                    android:src="@drawable/ic_cam_logo" />
+            </FrameLayout>
 
             <TextView
-                android:id="@+id/tvRole"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Call-A-Mechanic"
+                android:textColor="@color/cam_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvMechanicRole"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_chip_admin"
+                android:background="@drawable/bg_chip_blue"
                 android:paddingStart="10dp"
                 android:paddingTop="6dp"
                 android:paddingEnd="10dp"
                 android:paddingBottom="6dp"
-                android:text="ADMIN"
-                android:textColor="@color/cam_admin"
+                android:text="MECHANIC"
+                android:textColor="@color/cam_primary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
             <ImageButton
-                android:id="@+id/btnOpenProfile"
+                android:id="@+id/btnMechanicProfile"
                 android:layout_width="44dp"
                 android:layout_height="44dp"
                 android:background="@drawable/bg_profile_icon_button"
@@ -75,11 +68,11 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/tvAdminWelcome"
+            android:id="@+id/tvMechanicWelcome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:text="Welcome, Admin"
+            android:text="Welcome, Mechanic"
             android:textColor="@color/cam_text"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -88,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Monitor the shop, appointments, and staff activity"
+            android:text="Manage assigned repair jobs and update service progress"
             android:textColor="@color/cam_subtext"
             android:textSize="15sp" />
 
@@ -101,26 +94,20 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_stat_card"
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_wrench" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Total Jobs"
+                    android:text="New Jobs"
                     android:textColor="@color/cam_subtext" />
 
                 <TextView
-                    android:id="@+id/tvTotalJobs"
+                    android:id="@+id/tvNewJobs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -133,26 +120,20 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_stat_card"
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_clock" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Pending Jobs"
+                    android:text="Active Jobs"
                     android:textColor="@color/cam_subtext" />
 
                 <TextView
-                    android:id="@+id/tvPendingJobs"
+                    android:id="@+id/tvMyActiveJobs"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -172,26 +153,20 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_stat_card"
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_refresh" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:text="In Progress"
                     android:textColor="@color/cam_subtext" />
 
                 <TextView
-                    android:id="@+id/tvInProgressJobs"
+                    android:id="@+id/tvMechanicInProgress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -204,26 +179,20 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_marginStart="8dp"
+                android:layout_weight="1"
                 android:background="@drawable/bg_stat_card"
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:src="@drawable/ic_shield" />
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Finished Jobs"
+                    android:text="Finished"
                     android:textColor="@color/cam_subtext" />
 
                 <TextView
-                    android:id="@+id/tvCompletedJobs"
+                    android:id="@+id/tvMechanicFinished"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
@@ -234,96 +203,184 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/btnCreateMechanic"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_primary_button"
-                android:clickable="true"
-                android:drawableStart="@drawable/ic_person_add"
-                android:drawablePadding="10dp"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="Create New Mechanic"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btnUserRegistry"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_secondary_button"
-                android:clickable="true"
-                android:drawableStart="@drawable/ic_person"
-                android:drawablePadding="10dp"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="User Registry"
-                android:textColor="@color/cam_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/btnRefreshAdmin"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_secondary_button"
-                android:clickable="true"
-                android:drawableStart="@drawable/ic_refresh"
-                android:drawablePadding="10dp"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="Refresh Data"
-                android:textColor="@color/cam_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
         <TextView
+            android:id="@+id/btnRefreshMechanic"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="22dp"
-            android:text="Master Service Queue"
-            android:textColor="@color/cam_text"
-            android:textSize="22sp"
+            android:layout_height="50dp"
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_primary_button"
+            android:clickable="true"
+            android:drawableStart="@drawable/ic_refresh"
+            android:drawablePadding="8dp"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Refresh Data"
+            android:textColor="@android:color/white"
             android:textStyle="bold" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvAdminAppointments"
+        <TextView
+            android:id="@+id/tvMechanicEmptyState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:nestedScrollingEnabled="false" />
+            android:gravity="center"
+            android:textColor="@color/cam_subtext"
+            android:visibility="gone" />
 
         <ProgressBar
-            android:id="@+id/progressBarAdmin"
+            android:id="@+id/progressBarMechanic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:visibility="gone" />
 
-        <TextView
-            android:id="@+id/tvEmptyStateAdmin"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="New Service Requests"
+                android:textColor="@color/cam_text"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvNewRequestsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_blue"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="0"
+                android:textColor="@color/cam_primary"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvNewRequests"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:text="No appointments found"
-            android:textColor="@color/cam_subtext"
-            android:visibility="gone" />
+            android:nestedScrollingEnabled="false" />
 
         <TextView
-            android:id="@+id/btnLogoutAdmin"
+            android:id="@+id/tvNewRequestsEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_stat_card"
+            android:gravity="center"
+            android:padding="22dp"
+            android:text="No new unassigned requests right now."
+            android:textColor="@color/cam_subtext" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="My Assigned Jobs"
+                android:textColor="@color/cam_text"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvActiveJobsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_blue"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="0"
+                android:textColor="@color/cam_primary"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvActiveJobs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:nestedScrollingEnabled="false" />
+
+        <TextView
+            android:id="@+id/tvActiveJobsEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_stat_card"
+            android:gravity="center"
+            android:padding="22dp"
+            android:text="You do not have active assigned jobs right now."
+            android:textColor="@color/cam_subtext" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Finished Jobs"
+                android:textColor="@color/cam_text"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvFinishedJobsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_success"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="0"
+                android:textColor="@color/cam_success"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvFinishedJobs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:nestedScrollingEnabled="false" />
+
+        <TextView
+            android:id="@+id/tvFinishedJobsEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_stat_card"
+            android:gravity="center"
+            android:padding="22dp"
+            android:text="No finished jobs yet."
+            android:textColor="@color/cam_subtext" />
+
+        <TextView
+            android:id="@+id/btnLogoutMechanic"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_marginTop="20dp"

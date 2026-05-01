@@ -11,16 +11,20 @@
         android:orientation="vertical"
         android:padding="18dp">
 
-        <Button
+        <TextView
             android:id="@+id/btnBackHome"
             android:layout_width="wrap_content"
             android:layout_height="44dp"
             android:background="@drawable/bg_secondary_button"
-            android:backgroundTint="@null"
+            android:clickable="true"
             android:drawableStart="@drawable/ic_arrow_back"
             android:drawablePadding="6dp"
+            android:focusable="true"
+            android:gravity="center"
+            android:minWidth="96dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
             android:text="Back"
-            android:textAllCaps="false"
             android:textColor="@color/cam_primary" />
 
         <LinearLayout
@@ -39,7 +43,8 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_wrench" />
+                    android:contentDescription="App Logo"
+                    android:src="@drawable/ic_cam_logo" />
             </FrameLayout>
 
             <TextView
@@ -262,15 +267,16 @@
                 android:layout_marginTop="12dp"
                 android:visibility="gone" />
 
-            <Button
+            <TextView
                 android:id="@+id/btnRegister"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/bg_primary_button"
-                android:backgroundTint="@null"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
                 android:text="Create Account"
-                android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
 

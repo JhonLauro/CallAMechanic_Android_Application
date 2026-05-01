@@ -3,6 +3,7 @@ package com.jhonlauro.callamechanic.ui.admin
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jhonlauro.callamechanic.data.model.AdminUser
@@ -32,7 +33,7 @@ class UserRegistryActivity : AppCompatActivity() {
         sessionManager = SessionManager(this)
 
         adapter = UserAdapter(emptyList()) { user ->
-            deleteUser(user)
+            confirmDeleteUser(user)
         }
 
         binding.rvUsers.layoutManager = LinearLayoutManager(this)
@@ -89,6 +90,17 @@ class UserRegistryActivity : AppCompatActivity() {
                     binding.tvEmptyUsers.text = t.message ?: "Something went wrong"
                 }
             })
+    }
+
+    private fun confirmDeleteUser(user: AdminUser) {
+        AlertDialog.Builder(this)
+            .setTitle("Delete user?")
+            .setMessage("This will remove ${user.fullName ?: "this user"} from the system.")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Delete") { _, _ ->
+                deleteUser(user)
+            }
+            .show()
     }
 
     private fun deleteUser(user: AdminUser) {

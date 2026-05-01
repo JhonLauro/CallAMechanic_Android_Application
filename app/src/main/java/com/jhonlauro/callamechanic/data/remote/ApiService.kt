@@ -11,7 +11,9 @@ import com.jhonlauro.callamechanic.data.model.DeleteUserResponse
 import com.jhonlauro.callamechanic.data.model.LoginRequest
 import com.jhonlauro.callamechanic.data.model.LoginResponse
 import com.jhonlauro.callamechanic.data.model.RegisterRequest
+import com.jhonlauro.callamechanic.data.model.UpdateProfileRequest
 import com.jhonlauro.callamechanic.data.model.UpdateStatusRequest
+import com.jhonlauro.callamechanic.data.model.User
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -51,6 +53,12 @@ interface ApiService {
         @Body request: UpdateStatusRequest
     ): Call<ApiMessageResponse<Appointment>>
 
+    @PATCH("appointments/{id}/claim")
+    fun claimAppointment(
+        @Header("Authorization") token: String,
+        @Path("id") appointmentId: Long
+    ): Call<ApiMessageResponse<Appointment>>
+
     @GET("admin/users")
     fun getAdminUsers(
         @Header("Authorization") token: String
@@ -74,4 +82,15 @@ interface ApiService {
         @Path("id") appointmentId: Long,
         @Body request: AssignMechanicRequest
     ): Call<ApiMessageResponse<Appointment>>
+
+    @GET("profile")
+    fun getProfile(
+        @Header("Authorization") token: String
+    ): Call<ApiMessageResponse<User>>
+
+    @retrofit2.http.PUT("profile")
+    fun updateProfile(
+        @Header("Authorization") token: String,
+        @Body request: UpdateProfileRequest
+    ): Call<ApiMessageResponse<User>>
 }

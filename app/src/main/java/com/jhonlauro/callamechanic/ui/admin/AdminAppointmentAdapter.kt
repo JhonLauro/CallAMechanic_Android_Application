@@ -7,7 +7,8 @@ import com.jhonlauro.callamechanic.data.model.Appointment
 import com.jhonlauro.callamechanic.databinding.ItemAdminAppointmentBinding
 
 class AdminAppointmentAdapter(
-    private var items: List<Appointment>
+    private var items: List<Appointment>,
+    private val onItemClick: (Appointment) -> Unit
 ) : RecyclerView.Adapter<AdminAppointmentAdapter.AdminAppointmentViewHolder>() {
 
     inner class AdminAppointmentViewHolder(
@@ -21,12 +22,13 @@ class AdminAppointmentAdapter(
             binding.tvServiceTypeAdmin.text = item.serviceType ?: "-"
             binding.tvMechanicAdmin.text = item.mechanic?.fullName ?: "Unassigned"
             binding.tvStatusAdmin.text = formatStatus(item.status ?: "PENDING")
+            binding.root.setOnClickListener { onItemClick(item) }
         }
 
         private fun formatStatus(status: String): String {
             return when (status) {
                 "IN_PROGRESS" -> "In Progress"
-                "COMPLETED" -> "Completed"
+                "COMPLETED", "FINISHED" -> "Finished"
                 "CANCELLED" -> "Cancelled"
                 else -> "Pending"
             }

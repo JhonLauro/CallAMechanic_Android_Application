@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="#2"
-            android:textColor="@color/cam_text"
+            android:textColor="@color/cam_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
 

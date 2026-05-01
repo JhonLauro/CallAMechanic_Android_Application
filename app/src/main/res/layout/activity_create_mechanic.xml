@@ -1,85 +1,212 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_page_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="18dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_toolbar_icon"
+                android:padding="8dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="App Logo"
+                    android:src="@drawable/ic_cam_logo" />
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:text="Call-A-Mechanic"
+                android:textColor="@color/cam_text"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/btnCreateMechanicCancel"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_secondary_button"
+                android:clickable="true"
+                android:drawableStart="@drawable/ic_arrow_back"
+                android:drawablePadding="6dp"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="92dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="Back"
+                android:textColor="@color/cam_primary" />
+        </LinearLayout>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Create New Mechanic"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <EditText
-            android:id="@+id/etMechanicFullName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:hint="Full Name" />
-
-        <EditText
-            android:id="@+id/etMechanicEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Email" />
-
-        <EditText
-            android:id="@+id/etMechanicPhone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Phone Number" />
-
-        <EditText
-            android:id="@+id/etMechanicPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Password"
-            android:inputType="textPassword" />
-
-        <EditText
-            android:id="@+id/etMechanicId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Mechanic ID (e.g. MEC-001)" />
+            android:text="Create New Mechanic"
+            android:textColor="@color/cam_text"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/tvCreateMechanicError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:textColor="#D32F2F"
-            android:visibility="gone" />
+            android:layout_marginTop="6dp"
+            android:text="Add a mechanic account that can claim and update repair jobs"
+            android:textColor="@color/cam_subtext"
+            android:textSize="15sp" />
 
-        <ProgressBar
-            android:id="@+id/progressBarCreateMechanic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/btnCreateMechanicSubmit"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Create Mechanic" />
+            android:layout_marginTop="18dp"
+            android:background="@drawable/bg_stat_card"
+            android:orientation="vertical"
+            android:padding="20dp">
 
-        <Button
-            android:id="@+id/btnCreateMechanicCancel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Cancel" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Full Name"
+                android:textColor="@color/cam_text"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etMechanicFullName"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input"
+                android:hint="Mechanic full name"
+                android:padding="14dp"
+                android:textColor="@color/cam_text"
+                android:textColorHint="@color/cam_subtext" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Email Address"
+                android:textColor="@color/cam_text"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etMechanicEmail"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input"
+                android:hint="mechanic@email.com"
+                android:inputType="textEmailAddress"
+                android:padding="14dp"
+                android:textColor="@color/cam_text"
+                android:textColorHint="@color/cam_subtext" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Phone Number"
+                android:textColor="@color/cam_text"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etMechanicPhone"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input"
+                android:hint="09123456789"
+                android:inputType="phone"
+                android:padding="14dp"
+                android:textColor="@color/cam_text"
+                android:textColorHint="@color/cam_subtext" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Password"
+                android:textColor="@color/cam_text"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etMechanicPassword"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input"
+                android:hint="Minimum 8 characters"
+                android:inputType="textPassword"
+                android:padding="14dp"
+                android:textColor="@color/cam_text"
+                android:textColorHint="@color/cam_subtext" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Mechanic ID"
+                android:textColor="@color/cam_text"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/etMechanicId"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_input"
+                android:hint="e.g. 01-001"
+                android:padding="14dp"
+                android:textColor="@color/cam_text"
+                android:textColorHint="@color/cam_subtext" />
+
+            <TextView
+                android:id="@+id/tvCreateMechanicError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:textColor="@color/cam_danger"
+                android:visibility="gone" />
+
+            <ProgressBar
+                android:id="@+id/progressBarCreateMechanic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/btnCreateMechanicSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="18dp"
+                android:background="@drawable/bg_primary_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="Create Mechanic"
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -10,5 +10,6 @@ object Constants {
     const val KEY_FULL_NAME = "key_full_name"
     const val KEY_EMAIL = "key_email"
     const val KEY_ADMIN_ID = "key_admin_id"
+    const val KEY_MECHANIC_ID = "key_mechanic_id"
     const val KEY_PHONE_NUMBER = "key_phone_number"
 }

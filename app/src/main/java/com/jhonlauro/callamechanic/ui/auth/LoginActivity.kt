@@ -12,6 +12,7 @@ import com.jhonlauro.callamechanic.databinding.ActivityLoginBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.admin.AdminDashboardActivity
 import com.jhonlauro.callamechanic.ui.client.ClientDashboardActivity
+import com.jhonlauro.callamechanic.ui.mechanic.MechanicDashboardActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -84,14 +85,16 @@ class LoginActivity : AppCompatActivity() {
                         fullName = loginData.user.fullName,
                         email = loginData.user.email,
                         adminId = loginData.user.adminId,
+                        mechanicId = loginData.user.mechanicId,
                         phoneNumber = loginData.user.phoneNumber
                     )
 
-                    if (loginData.user.role.uppercase() == "ADMIN") {
-                        startActivity(Intent(this@LoginActivity, AdminDashboardActivity::class.java))
-                    } else {
-                        startActivity(Intent(this@LoginActivity, ClientDashboardActivity::class.java))
+                    val nextScreen = when (loginData.user.role.uppercase()) {
+                        "ADMIN" -> Intent(this@LoginActivity, AdminDashboardActivity::class.java)
+                        "MECHANIC" -> Intent(this@LoginActivity, MechanicDashboardActivity::class.java)
+                        else -> Intent(this@LoginActivity, ClientDashboardActivity::class.java)
                     }
+                    startActivity(nextScreen)
                     finish()
                 } else {
                     binding.tvError.text = response.errorBody()?.string() ?: "Login failed"

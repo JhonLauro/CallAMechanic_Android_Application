@@ -9,6 +9,7 @@ import com.jhonlauro.callamechanic.ui.admin.AdminDashboardActivity
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
 import com.jhonlauro.callamechanic.ui.auth.RegisterActivity
 import com.jhonlauro.callamechanic.ui.client.ClientDashboardActivity
+import com.jhonlauro.callamechanic.ui.mechanic.MechanicDashboardActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         if (sessionManager.isLoggedIn()) {
             val intent = when (sessionManager.getRole()?.uppercase()) {
                 "ADMIN" -> Intent(this, AdminDashboardActivity::class.java)
+                "MECHANIC" -> Intent(this, MechanicDashboardActivity::class.java)
                 else -> Intent(this, ClientDashboardActivity::class.java)
             }
             startActivity(intent)
