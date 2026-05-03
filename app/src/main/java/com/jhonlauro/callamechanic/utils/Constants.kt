@@ -12,4 +12,5 @@ object Constants {
     const val KEY_ADMIN_ID = "key_admin_id"
     const val KEY_MECHANIC_ID = "key_mechanic_id"
     const val KEY_PHONE_NUMBER = "key_phone_number"
+    const val KEY_PHOTO_URL = "key_photo_url"
 }

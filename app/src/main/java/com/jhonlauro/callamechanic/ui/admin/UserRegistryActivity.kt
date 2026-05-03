@@ -13,6 +13,7 @@ import com.jhonlauro.callamechanic.data.model.DeleteUserResponse
 import com.jhonlauro.callamechanic.data.repository.AdminRepository
 import com.jhonlauro.callamechanic.databinding.ActivityUserRegistryBinding
 import com.jhonlauro.callamechanic.session.SessionManager
+import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,6 +42,7 @@ class UserRegistryActivity : AppCompatActivity() {
 
         binding.btnBackRegistry.setOnClickListener {
             finish()
+            AppTransitions.close(this)
         }
 
         loadUsers()

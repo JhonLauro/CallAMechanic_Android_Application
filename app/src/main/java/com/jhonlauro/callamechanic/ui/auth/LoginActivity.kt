@@ -2,8 +2,13 @@ package com.jhonlauro.callamechanic.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.View
+import android.widget.EditText
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import com.jhonlauro.callamechanic.R
 import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.LoginRequest
 import com.jhonlauro.callamechanic.data.model.LoginResponse
@@ -12,6 +17,8 @@ import com.jhonlauro.callamechanic.databinding.ActivityLoginBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.admin.AdminDashboardActivity
 import com.jhonlauro.callamechanic.ui.client.ClientDashboardActivity
+import com.jhonlauro.callamechanic.ui.common.AppTransitions
+import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
 import com.jhonlauro.callamechanic.ui.mechanic.MechanicDashboardActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,6 +37,8 @@ class LoginActivity : AppCompatActivity() {
 
         authRepository = AuthRepository()
         sessionManager = SessionManager(this)
+        FormScrollHelper.enable(binding.root)
+        setupPasswordToggle(binding.etPassword, binding.btnTogglePassword)
 
         binding.btnLogin.setOnClickListener {
             loginUser()
@@ -37,10 +46,27 @@ class LoginActivity : AppCompatActivity() {
 
         binding.tvGoRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+            AppTransitions.open(this)
         }
 
         binding.btnBackHome.setOnClickListener {
             finish()
+            AppTransitions.close(this)
+        }
+    }
+
+    private fun setupPasswordToggle(field: EditText, button: ImageButton) {
+        var visible = false
+        button.setOnClickListener {
+            visible = !visible
+            field.transformationMethod = if (visible) {
+                HideReturnsTransformationMethod.getInstance()
+            } else {
+                PasswordTransformationMethod.getInstance()
+            }
+            field.setSelection(field.text?.length ?: 0)
+            button.setImageResource(if (visible) R.drawable.ic_eye else R.drawable.ic_eye_off)
+            button.contentDescription = if (visible) "Hide password" else "Show password"
         }
     }
 
@@ -86,7 +112,8 @@ class LoginActivity : AppCompatActivity() {
                         email = loginData.user.email,
                         adminId = loginData.user.adminId,
                         mechanicId = loginData.user.mechanicId,
-                        phoneNumber = loginData.user.phoneNumber
+                        phoneNumber = loginData.user.phoneNumber,
+                        photoUrl = loginData.user.photoUrl
                     )
 
                     val nextScreen = when (loginData.user.role.uppercase()) {
@@ -95,6 +122,7 @@ class LoginActivity : AppCompatActivity() {
                         else -> Intent(this@LoginActivity, ClientDashboardActivity::class.java)
                     }
                     startActivity(nextScreen)
+                    AppTransitions.open(this@LoginActivity)
                     finish()
                 } else {
                     binding.tvError.text = response.errorBody()?.string() ?: "Login failed"

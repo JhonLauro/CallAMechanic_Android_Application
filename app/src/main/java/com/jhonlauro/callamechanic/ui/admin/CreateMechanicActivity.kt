@@ -1,15 +1,22 @@
 package com.jhonlauro.callamechanic.ui.admin
 
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.View
+import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.jhonlauro.callamechanic.R
 import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.CreateMechanicRequest
 import com.jhonlauro.callamechanic.data.model.CreateMechanicResponse
 import com.jhonlauro.callamechanic.data.repository.AdminRepository
 import com.jhonlauro.callamechanic.databinding.ActivityCreateMechanicBinding
 import com.jhonlauro.callamechanic.session.SessionManager
+import com.jhonlauro.callamechanic.ui.common.AppTransitions
+import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,6 +34,8 @@ class CreateMechanicActivity : AppCompatActivity() {
 
         adminRepository = AdminRepository()
         sessionManager = SessionManager(this)
+        FormScrollHelper.enable(binding.root)
+        setupPasswordToggle(binding.etMechanicPassword, binding.btnToggleMechanicPassword)
 
         binding.btnCreateMechanicSubmit.setOnClickListener {
             createMechanic()
@@ -34,6 +43,22 @@ class CreateMechanicActivity : AppCompatActivity() {
 
         binding.btnCreateMechanicCancel.setOnClickListener {
             finish()
+            AppTransitions.close(this)
+        }
+    }
+
+    private fun setupPasswordToggle(field: EditText, button: ImageButton) {
+        var visible = false
+        button.setOnClickListener {
+            visible = !visible
+            field.transformationMethod = if (visible) {
+                HideReturnsTransformationMethod.getInstance()
+            } else {
+                PasswordTransformationMethod.getInstance()
+            }
+            field.setSelection(field.text?.length ?: 0)
+            button.setImageResource(if (visible) R.drawable.ic_eye else R.drawable.ic_eye_off)
+            button.contentDescription = if (visible) "Hide mechanic password" else "Show mechanic password"
         }
     }
 
@@ -98,6 +123,7 @@ class CreateMechanicActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                         finish()
+                        AppTransitions.close(this@CreateMechanicActivity)
                     } else {
                         binding.tvCreateMechanicError.text =
                             response.errorBody()?.string() ?: "Failed to create mechanic"

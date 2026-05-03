@@ -1,5 +1,6 @@
 package com.jhonlauro.callamechanic.ui.client
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -7,9 +8,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.Appointment
 import com.jhonlauro.callamechanic.data.model.CreateAppointmentRequest
+import com.jhonlauro.callamechanic.data.model.Vehicle
 import com.jhonlauro.callamechanic.data.repository.AppointmentRepository
+import com.jhonlauro.callamechanic.data.repository.VehicleRepository
 import com.jhonlauro.callamechanic.databinding.ActivityBookAppointmentBinding
 import com.jhonlauro.callamechanic.session.SessionManager
+import com.jhonlauro.callamechanic.ui.common.AppTransitions
+import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -18,7 +23,9 @@ class BookAppointmentActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBookAppointmentBinding
     private lateinit var appointmentRepository: AppointmentRepository
+    private lateinit var vehicleRepository: VehicleRepository
     private lateinit var sessionManager: SessionManager
+    private var vehicles: List<Vehicle> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +33,9 @@ class BookAppointmentActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         appointmentRepository = AppointmentRepository()
+        vehicleRepository = VehicleRepository()
         sessionManager = SessionManager(this)
+        FormScrollHelper.enable(binding.root)
 
         binding.btnSubmitAppointment.setOnClickListener {
             submitAppointment()
@@ -34,7 +43,48 @@ class BookAppointmentActivity : AppCompatActivity() {
 
         binding.btnCancel.setOnClickListener {
             finish()
+            AppTransitions.close(this)
         }
+
+        binding.etVehicleInfo.setOnClickListener {
+            showVehiclePicker()
+        }
+
+        loadVehicles()
+    }
+
+    private fun loadVehicles() {
+        val token = sessionManager.getToken() ?: return
+        vehicleRepository.getVehicles(token)
+            .enqueue(object : Callback<ApiMessageResponse<List<Vehicle>>> {
+                override fun onResponse(
+                    call: Call<ApiMessageResponse<List<Vehicle>>>,
+                    response: Response<ApiMessageResponse<List<Vehicle>>>
+                ) {
+                    if (response.isSuccessful && response.body()?.success == true) {
+                        vehicles = response.body()?.data ?: emptyList()
+                    }
+                }
+
+                override fun onFailure(
+                    call: Call<ApiMessageResponse<List<Vehicle>>>,
+                    t: Throwable
+                ) {
+                    vehicles = emptyList()
+                }
+            })
+    }
+
+    private fun showVehiclePicker() {
+        if (vehicles.isEmpty()) return
+
+        val labels = vehicles.map { it.displayName() }.toTypedArray()
+        AlertDialog.Builder(this)
+            .setTitle("Select Vehicle")
+            .setItems(labels) { _, which ->
+                binding.etVehicleInfo.setText(labels[which])
+            }
+            .show()
     }
 
     private fun submitAppointment() {
@@ -84,6 +134,7 @@ class BookAppointmentActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                         finish()
+                        AppTransitions.close(this@BookAppointmentActivity)
                     } else {
                         binding.tvError.text = response.errorBody()?.string() ?: "Failed to book appointment"
                         binding.tvError.visibility = View.VISIBLE

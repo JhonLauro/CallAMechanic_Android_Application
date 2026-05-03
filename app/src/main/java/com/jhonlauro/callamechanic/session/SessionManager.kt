@@ -17,7 +17,8 @@ class SessionManager(context: Context) {
         email: String? = null,
         adminId: String? = null,
         mechanicId: String? = null,
-        phoneNumber: String? = null
+        phoneNumber: String? = null,
+        photoUrl: String? = null
     ) {
         prefs.edit()
             .putString(Constants.KEY_TOKEN, token)
@@ -28,6 +29,7 @@ class SessionManager(context: Context) {
             .putString(Constants.KEY_ADMIN_ID, adminId)
             .putString(Constants.KEY_MECHANIC_ID, mechanicId)
             .putString(Constants.KEY_PHONE_NUMBER, phoneNumber)
+            .putString(Constants.KEY_PHOTO_URL, photoUrl)
             .apply()
     }
 
@@ -39,16 +41,25 @@ class SessionManager(context: Context) {
     fun getAdminId(): String? = prefs.getString(Constants.KEY_ADMIN_ID, null)
     fun getMechanicId(): String? = prefs.getString(Constants.KEY_MECHANIC_ID, null)
     fun getPhoneNumber(): String? = prefs.getString(Constants.KEY_PHONE_NUMBER, null)
+    fun getPhotoUrl(): String? = prefs.getString(Constants.KEY_PHOTO_URL, null)
 
     fun isLoggedIn(): Boolean = !getToken().isNullOrEmpty()
 
     fun updateProfileInfo(
         fullName: String,
-        phoneNumber: String?
+        phoneNumber: String?,
+        photoUrl: String? = getPhotoUrl()
     ) {
         prefs.edit()
             .putString(Constants.KEY_FULL_NAME, fullName)
             .putString(Constants.KEY_PHONE_NUMBER, phoneNumber)
+            .putString(Constants.KEY_PHOTO_URL, photoUrl)
+            .apply()
+    }
+
+    fun updateProfilePhoto(photoUrl: String?) {
+        prefs.edit()
+            .putString(Constants.KEY_PHOTO_URL, photoUrl)
             .apply()
     }
 

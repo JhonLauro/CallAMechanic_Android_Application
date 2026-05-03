@@ -4,26 +4,31 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".CallAMechanicApplication"
         android:allowBackup="true"
+        android:icon="@drawable/ic_app_icon"
         android:label="Call A Mechanic"
+        android:roundIcon="@drawable/ic_app_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.CallAMechanic"
         android:networkSecurityConfig="@xml/network_security_config"
         android:usesCleartextTraffic="true">
 
-        <activity android:name=".ui.profile.ProfileActivity" />
+        <activity android:name=".ui.profile.ProfileActivity" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.admin.AdminDashboardActivity" />
         <activity android:name=".ui.client.ClientDashboardActivity" />
-        <activity android:name=".ui.auth.RegisterActivity" />
-        <activity android:name=".ui.auth.LoginActivity" />
-        <activity android:name=".ui.client.BookAppointmentActivity" />
+        <activity android:name=".ui.client.ManageVehiclesActivity" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.auth.RegisterActivity" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.auth.LoginActivity" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.client.BookAppointmentActivity" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.admin.UserRegistryActivity" />
-        <activity android:name=".ui.admin.CreateMechanicActivity" />
+        <activity android:name=".ui.admin.CreateMechanicActivity" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.mechanic.MechanicDashboardActivity" />
         <activity android:name=".ui.appointment.AppointmentDetailsActivity" />
+        <activity android:name=".MainActivity" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.splash.SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

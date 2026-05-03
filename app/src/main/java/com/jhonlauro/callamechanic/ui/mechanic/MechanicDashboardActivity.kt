@@ -2,18 +2,24 @@ package com.jhonlauro.callamechanic.ui.mechanic
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.Appointment
+import com.jhonlauro.callamechanic.data.model.User
 import com.jhonlauro.callamechanic.data.repository.AppointmentRepository
+import com.jhonlauro.callamechanic.data.repository.ProfileRepository
 import com.jhonlauro.callamechanic.databinding.ActivityMechanicDashboardBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.appointment.AppointmentDetailsActivity
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
+import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import com.jhonlauro.callamechanic.ui.common.ProfileDropdown
+import com.jhonlauro.callamechanic.ui.common.ProfilePhotoRenderer
 import com.jhonlauro.callamechanic.ui.profile.ProfileActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,9 +30,17 @@ class MechanicDashboardActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMechanicDashboardBinding
     private lateinit var sessionManager: SessionManager
     private lateinit var appointmentRepository: AppointmentRepository
+    private lateinit var profileRepository: ProfileRepository
     private lateinit var newRequestsAdapter: MechanicAppointmentAdapter
     private lateinit var activeJobsAdapter: MechanicAppointmentAdapter
     private lateinit var finishedJobsAdapter: MechanicAppointmentAdapter
+    private val refreshHandler = Handler(Looper.getMainLooper())
+    private val refreshRunnable = object : Runnable {
+        override fun run() {
+            loadAppointments(silent = true)
+            refreshHandler.postDelayed(this, 30000)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +49,7 @@ class MechanicDashboardActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
         appointmentRepository = AppointmentRepository()
+        profileRepository = ProfileRepository()
 
         newRequestsAdapter = createAdapter(MechanicAppointmentAdapter.Mode.NEW_REQUESTS)
         activeJobsAdapter = createAdapter(MechanicAppointmentAdapter.Mode.ACTIVE_JOBS)
@@ -42,28 +57,66 @@ class MechanicDashboardActivity : AppCompatActivity() {
 
         binding.rvNewRequests.layoutManager = LinearLayoutManager(this)
         binding.rvNewRequests.adapter = newRequestsAdapter
+        binding.rvNewRequests.setHasFixedSize(false)
         binding.rvActiveJobs.layoutManager = LinearLayoutManager(this)
         binding.rvActiveJobs.adapter = activeJobsAdapter
+        binding.rvActiveJobs.setHasFixedSize(false)
         binding.rvFinishedJobs.layoutManager = LinearLayoutManager(this)
         binding.rvFinishedJobs.adapter = finishedJobsAdapter
+        binding.rvFinishedJobs.setHasFixedSize(false)
 
         binding.tvMechanicWelcome.text = "Welcome, ${sessionManager.getFullName() ?: "Mechanic"}"
         binding.tvMechanicRole.text = sessionManager.getRole() ?: "MECHANIC"
+        renderProfilePhoto()
 
         binding.btnMechanicProfile.setOnClickListener {
             showProfileMenu()
         }
 
-        binding.btnRefreshMechanic.setOnClickListener {
-            loadAppointments()
-        }
+        binding.btnRefreshMechanic.visibility = View.GONE
 
         binding.btnLogoutMechanic.visibility = View.GONE
     }
 
     override fun onResume() {
         super.onResume()
+        renderProfilePhoto()
+        loadProfile()
         loadAppointments()
+    }
+
+    private fun renderProfilePhoto() {
+        ProfilePhotoRenderer.show(binding.btnMechanicProfile, sessionManager.getPhotoUrl())
+    }
+
+    private fun loadProfile() {
+        val token = sessionManager.getToken() ?: return
+        profileRepository.getProfile(token).enqueue(object : Callback<ApiMessageResponse<User>> {
+            override fun onResponse(
+                call: Call<ApiMessageResponse<User>>,
+                response: Response<ApiMessageResponse<User>>
+            ) {
+                if (response.isSuccessful && response.body()?.success == true) {
+                    response.body()?.data?.let { user ->
+                        sessionManager.updateProfileInfo(user.fullName, user.phoneNumber, user.photoUrl)
+                        binding.tvMechanicWelcome.text = "Welcome, ${user.fullName}"
+                        renderProfilePhoto()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ApiMessageResponse<User>>, t: Throwable) = Unit
+        })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        refreshHandler.postDelayed(refreshRunnable, 30000)
+    }
+
+    override fun onStop() {
+        refreshHandler.removeCallbacks(refreshRunnable)
+        super.onStop()
     }
 
     private fun createAdapter(mode: MechanicAppointmentAdapter.Mode): MechanicAppointmentAdapter {
@@ -76,15 +129,17 @@ class MechanicDashboardActivity : AppCompatActivity() {
         )
     }
 
-    private fun loadAppointments() {
+    private fun loadAppointments(silent: Boolean = false) {
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            showEmptyMessage("No active session found")
+            if (!silent) showEmptyMessage("No active session found")
             return
         }
 
-        binding.progressBarMechanic.visibility = View.VISIBLE
-        binding.tvMechanicEmptyState.visibility = View.GONE
+        if (!silent) {
+            binding.progressBarMechanic.visibility = View.VISIBLE
+            binding.tvMechanicEmptyState.visibility = View.GONE
+        }
 
         appointmentRepository.getAppointments(token)
             .enqueue(object : Callback<ApiMessageResponse<List<Appointment>>> {
@@ -92,11 +147,11 @@ class MechanicDashboardActivity : AppCompatActivity() {
                     call: Call<ApiMessageResponse<List<Appointment>>>,
                     response: Response<ApiMessageResponse<List<Appointment>>>
                 ) {
-                    binding.progressBarMechanic.visibility = View.GONE
+                    if (!silent) binding.progressBarMechanic.visibility = View.GONE
 
                     if (response.isSuccessful && response.body()?.success == true) {
                         updateDashboard(response.body()?.data ?: emptyList())
-                    } else {
+                    } else if (!silent) {
                         showEmptyMessage("Failed to load mechanic dashboard")
                     }
                 }
@@ -105,20 +160,26 @@ class MechanicDashboardActivity : AppCompatActivity() {
                     call: Call<ApiMessageResponse<List<Appointment>>>,
                     t: Throwable
                 ) {
-                    binding.progressBarMechanic.visibility = View.GONE
-                    showEmptyMessage(t.message ?: "Something went wrong")
+                    if (!silent) {
+                        binding.progressBarMechanic.visibility = View.GONE
+                        showEmptyMessage(t.message ?: "Something went wrong")
+                    }
                 }
             })
     }
 
     private fun updateDashboard(appointments: List<Appointment>) {
-        val newRequests = appointments.filter { isUnassignedPending(it) }
+        val newRequests = appointments
+            .filter { isUnassignedPending(it) }
+            .sortedWith(newestAppointmentFirst())
         val assignedJobs = appointments.filter { isAssignedToCurrentMechanic(it) }
         val activeJobs = assignedJobs.filter {
             val status = normalizeStatus(it.status)
             status == "PENDING" || status == "IN_PROGRESS"
-        }
-        val finishedJobs = assignedJobs.filter { normalizeStatus(it.status) == "FINISHED" }
+        }.sortedWith(newestAppointmentFirst())
+        val finishedJobs = assignedJobs
+            .filter { normalizeStatus(it.status) == "FINISHED" }
+            .sortedWith(newestAppointmentFirst())
         val inProgressJobs = assignedJobs.filter { normalizeStatus(it.status) == "IN_PROGRESS" }
 
         newRequestsAdapter.updateData(newRequests)
@@ -203,10 +264,18 @@ class MechanicDashboardActivity : AppCompatActivity() {
         return if (status == "COMPLETED") "FINISHED" else status ?: "PENDING"
     }
 
+    private fun newestAppointmentFirst(): Comparator<Appointment> {
+        return compareByDescending<Appointment> { it.scheduledDate ?: "" }
+            .thenByDescending { it.id }
+    }
+
     private fun showProfileMenu() {
         ProfileDropdown.show(
             anchor = binding.btnMechanicProfile,
-            onViewProfile = { startActivity(Intent(this, ProfileActivity::class.java)) },
+            onViewProfile = {
+                startActivity(Intent(this, ProfileActivity::class.java))
+                AppTransitions.open(this)
+            },
             onSignOut = { signOut() }
         )
     }
@@ -214,6 +283,7 @@ class MechanicDashboardActivity : AppCompatActivity() {
     private fun signOut() {
         sessionManager.clearSession()
         startActivity(Intent(this, LoginActivity::class.java))
+        AppTransitions.fade(this)
         finishAffinity()
     }
 
@@ -229,5 +299,6 @@ class MechanicDashboardActivity : AppCompatActivity() {
             putExtra(AppointmentDetailsActivity.EXTRA_SCHEDULE, appointment.scheduledDate)
             putExtra(AppointmentDetailsActivity.EXTRA_MECHANIC, appointment.mechanic?.fullName ?: sessionManager.getFullName())
         })
+        AppTransitions.open(this)
     }
 }

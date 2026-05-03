@@ -3,6 +3,7 @@ package com.jhonlauro.callamechanic.ui.appointment
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.jhonlauro.callamechanic.databinding.ActivityAppointmentDetailsBinding
+import com.jhonlauro.callamechanic.ui.common.AppTransitions
 
 class AppointmentDetailsActivity : AppCompatActivity() {
 
@@ -13,7 +14,10 @@ class AppointmentDetailsActivity : AppCompatActivity() {
         binding = ActivityAppointmentDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnBack.setOnClickListener { finish() }
+        binding.btnBack.setOnClickListener {
+            finish()
+            AppTransitions.close(this)
+        }
 
         binding.tvJobId.text = "#${intent.getLongExtra(EXTRA_ID, -1L)}"
         binding.tvStatus.text = formatStatus(intent.getStringExtra(EXTRA_STATUS))

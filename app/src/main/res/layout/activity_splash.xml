@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_page_background">
+
+    <ImageView
+        android:id="@+id/bgCarTop"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="34dp"
+        android:layout_marginTop="72dp"
+        android:alpha="0.13"
+        android:rotation="-12"
+        android:src="@drawable/ic_splash_car" />
+
+    <ImageView
+        android:id="@+id/bgWrenchTop"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="116dp"
+        android:layout_marginEnd="42dp"
+        android:alpha="0.12"
+        android:rotation="18"
+        android:src="@drawable/ic_wrench" />
+
+    <ImageView
+        android:id="@+id/bgBoltLeft"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginStart="38dp"
+        android:alpha="0.12"
+        android:rotation="10"
+        android:src="@drawable/ic_splash_bolt" />
+
+    <ImageView
+        android:id="@+id/bgShieldRight"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical|end"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="82dp"
+        android:alpha="0.11"
+        android:rotation="-10"
+        android:src="@drawable/ic_shield" />
+
+    <ImageView
+        android:id="@+id/bgClockBottom"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="58dp"
+        android:layout_marginBottom="92dp"
+        android:alpha="0.11"
+        android:rotation="16"
+        android:src="@drawable/ic_clock" />
+
+    <ImageView
+        android:id="@+id/bgCarBottom"
+        android:layout_width="58dp"
+        android:layout_height="58dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="126dp"
+        android:alpha="0.13"
+        android:rotation="8"
+        android:src="@drawable/ic_splash_car" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp">
+
+        <FrameLayout
+            android:id="@+id/logoCard"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:background="@drawable/bg_toolbar_icon"
+            android:elevation="10dp"
+            android:padding="24dp">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="Call-A-Mechanic Logo"
+                android:src="@drawable/ic_cam_logo" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:text="Call-A-Mechanic"
+            android:textColor="@color/cam_text"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+</FrameLayout>

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/cam_bg" />
+    <gradient
+        android:angle="45"
+        android:startColor="#DCEBFF"
+        android:centerColor="#EEF5FF"
+        android:endColor="#FBFDFF"
+        android:type="linear" />
 </shape>

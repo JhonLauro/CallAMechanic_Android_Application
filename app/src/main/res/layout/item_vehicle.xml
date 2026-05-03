@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/bg_stat_card"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_chip_blue"
+        android:padding="10dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="Vehicle"
+            android:src="@drawable/ic_wrench" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvVehicleName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Honda Civic"
+            android:textColor="@color/cam_text"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvVehicleMeta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="2019 • Silver • Sedan"
+            android:textColor="@color/cam_subtext"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/tvVehiclePlate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:text="Plate: ABC 1234 • Recall: No Recall"
+            android:textColor="@color/cam_subtext"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/btnDeleteVehicle"
+        android:layout_width="74dp"
+        android:layout_height="38dp"
+        android:background="@drawable/bg_danger_outline"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:text="Delete"
+        android:textColor="@color/cam_danger"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+</LinearLayout>
+

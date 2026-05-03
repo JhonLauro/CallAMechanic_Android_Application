@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_page_background"
@@ -240,68 +240,121 @@
             android:layout_marginTop="18dp"
             android:orientation="vertical">
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/btnCreateMechanic"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:background="@drawable/bg_primary_button"
                 android:clickable="true"
-                android:drawableStart="@drawable/ic_person_add"
-                android:drawablePadding="10dp"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="Create New Mechanic"
-                android:textColor="@android:color/white"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
 
-            <TextView
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_person_add"
+                    android:tint="@android:color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create New Mechanic"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnUserRegistry"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_secondary_button"
                 android:clickable="true"
-                android:drawableStart="@drawable/ic_person"
-                android:drawablePadding="10dp"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="User Registry"
-                android:textColor="@color/cam_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
 
-            <TextView
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_person" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Registry"
+                    android:textColor="@color/cam_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnRefreshAdmin"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/bg_secondary_button"
                 android:clickable="true"
-                android:drawableStart="@drawable/ic_refresh"
-                android:drawablePadding="10dp"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="Refresh Data"
-                android:textColor="@color/cam_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_refresh" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Refresh Data"
+                    android:textColor="@color/cam_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            android:text="Master Service Queue"
-            android:textColor="@color/cam_text"
-            android:textSize="22sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Active Service Queue"
+                android:textColor="@color/cam_text"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvActiveServiceCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_blue"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="0"
+                android:textColor="@color/cam_primary"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvAdminAppointments"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
+            android:overScrollMode="never"
             android:nestedScrollingEnabled="false" />
 
         <ProgressBar
@@ -322,6 +375,56 @@
             android:textColor="@color/cam_subtext"
             android:visibility="gone" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Finished Service Records"
+                android:textColor="@color/cam_text"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvFinishedServiceCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_chip_success"
+                android:paddingStart="10dp"
+                android:paddingTop="5dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="5dp"
+                android:text="0"
+                android:textColor="@color/cam_success"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvAdminFinishedAppointments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:overScrollMode="never"
+            android:nestedScrollingEnabled="false" />
+
+        <TextView
+            android:id="@+id/tvFinishedEmptyStateAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_stat_card"
+            android:gravity="center"
+            android:padding="22dp"
+            android:text="No finished appointments found"
+            android:textColor="@color/cam_subtext"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/btnLogoutAdmin"
             android:layout_width="match_parent"
@@ -335,4 +438,4 @@
             android:textColor="@color/cam_danger"
             android:textStyle="bold" />
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

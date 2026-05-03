@@ -4,6 +4,7 @@ import com.jhonlauro.callamechanic.data.model.AdminUserListData
 import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.Appointment
 import com.jhonlauro.callamechanic.data.model.AssignMechanicRequest
+import com.jhonlauro.callamechanic.data.model.ChangePasswordRequest
 import com.jhonlauro.callamechanic.data.model.CreateAppointmentRequest
 import com.jhonlauro.callamechanic.data.model.CreateMechanicRequest
 import com.jhonlauro.callamechanic.data.model.CreateMechanicResponse
@@ -13,15 +14,22 @@ import com.jhonlauro.callamechanic.data.model.LoginResponse
 import com.jhonlauro.callamechanic.data.model.RegisterRequest
 import com.jhonlauro.callamechanic.data.model.UpdateProfileRequest
 import com.jhonlauro.callamechanic.data.model.UpdateStatusRequest
+import com.jhonlauro.callamechanic.data.model.UploadPhotoResponse
 import com.jhonlauro.callamechanic.data.model.User
+import com.jhonlauro.callamechanic.data.model.Vehicle
+import com.jhonlauro.callamechanic.data.model.VehicleRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.PATCH
+import retrofit2.http.Part
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.PUT
+import okhttp3.MultipartBody
 
 interface ApiService {
 
@@ -88,9 +96,39 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Call<ApiMessageResponse<User>>
 
-    @retrofit2.http.PUT("profile")
+    @PUT("profile")
     fun updateProfile(
         @Header("Authorization") token: String,
         @Body request: UpdateProfileRequest
     ): Call<ApiMessageResponse<User>>
+
+    @PUT("profile/password")
+    fun changePassword(
+        @Header("Authorization") token: String,
+        @Body request: ChangePasswordRequest
+    ): Call<ApiMessageResponse<Any>>
+
+    @Multipart
+    @POST("profile/photo")
+    fun uploadProfilePhoto(
+        @Header("Authorization") token: String,
+        @Part file: MultipartBody.Part
+    ): Call<ApiMessageResponse<UploadPhotoResponse>>
+
+    @GET("vehicles")
+    fun getVehicles(
+        @Header("Authorization") token: String
+    ): Call<ApiMessageResponse<List<Vehicle>>>
+
+    @POST("vehicles")
+    fun createVehicle(
+        @Header("Authorization") token: String,
+        @Body request: VehicleRequest
+    ): Call<ApiMessageResponse<Vehicle>>
+
+    @DELETE("vehicles/{id}")
+    fun deleteVehicle(
+        @Header("Authorization") token: String,
+        @Path("id") vehicleId: Long
+    ): Call<ApiMessageResponse<Any>>
 }

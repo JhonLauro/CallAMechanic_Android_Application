@@ -40,21 +40,32 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/btnBack"
                 android:layout_width="wrap_content"
                 android:layout_height="44dp"
                 android:background="@drawable/bg_secondary_button"
                 android:clickable="true"
-                android:drawableStart="@drawable/ic_arrow_back"
-                android:drawablePadding="6dp"
                 android:focusable="true"
                 android:gravity="center"
                 android:minWidth="92dp"
+                android:orientation="horizontal"
                 android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:text="Back"
-                android:textColor="@color/cam_primary" />
+                android:paddingEnd="14dp">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="7dp"
+                    android:src="@drawable/ic_arrow_back" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Back"
+                    android:textColor="@color/cam_primary"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
 
         <TextView
@@ -86,17 +97,45 @@
             android:padding="22dp">
 
             <FrameLayout
+                android:id="@+id/profilePhotoContainer"
                 android:layout_width="90dp"
                 android:layout_height="90dp"
                 android:background="@drawable/bg_avatar_circle"
-                android:padding="22dp">
+                android:clipToOutline="true">
 
                 <ImageView
+                    android:id="@+id/ivProfilePhoto"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:padding="22dp"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/ic_person"
                     android:tint="@android:color/white" />
             </FrameLayout>
+
+            <TextView
+                android:id="@+id/btnChangePhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_secondary_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minWidth="132dp"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:text="Change Photo"
+                android:textColor="@color/cam_primary"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <ProgressBar
+                android:id="@+id/progressPhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tvFullName"
@@ -151,19 +190,132 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:id="@+id/btnEditProfile"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/bg_secondary_button"
-                android:drawableStart="@drawable/ic_person"
-                android:drawablePadding="6dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="Edit Profile"
-                android:textColor="@color/cam_text" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_person" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Profile"
+                    android:textColor="@color/cam_text" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cardAdminOverview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_stat_card"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quick Overview"
+                android:textColor="@color/cam_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="86dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_secondary_button"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvOverviewUsers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/cam_primary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Users"
+                        android:textColor="@color/cam_subtext"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="86dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_secondary_button"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvOverviewMechanics"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/cam_primary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mechanics"
+                        android:textColor="@color/cam_subtext"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="86dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_secondary_button"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvOverviewActive"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/cam_primary"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Active Jobs"
+                        android:textColor="@color/cam_subtext"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -177,9 +329,34 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Account Information"
+                android:text="Personal Information"
                 android:textColor="@color/cam_text"
                 android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/cam_border" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Full Name"
+                android:textColor="@color/cam_subtext"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvPersonalFullName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Full name"
+                android:textColor="@color/cam_text"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -187,10 +364,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:text="Email Address"
-                android:textColor="@color/cam_subtext" />
+                android:textColor="@color/cam_subtext"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvEmail"
+                android:id="@+id/tvPersonalEmail"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -204,10 +383,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:text="Contact Number"
-                android:textColor="@color/cam_subtext" />
+                android:textColor="@color/cam_subtext"
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvContact"
+                android:id="@+id/tvPersonalContact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -228,26 +409,205 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Security"
+                android:text="Account Information"
+                android:textColor="@color/cam_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="14dp"
+                android:background="@color/cam_border" />
+
+            <TextView
+                android:id="@+id/tvAccountIdLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="User ID"
+                android:textColor="@color/cam_subtext"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAccountId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="ID"
+                android:textColor="@color/cam_text"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Account Type"
+                android:textColor="@color/cam_subtext"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAccountType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="User"
+                android:textColor="@color/cam_text"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Account Status"
+                android:textColor="@color/cam_subtext"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvAccountStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/bg_chip_success"
+                android:paddingStart="12dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:text="ACTIVE"
+                android:textColor="@color/cam_success"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cardClientGarage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_stat_card"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="My Vehicles"
                 android:textColor="@color/cam_text"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Manage your registered vehicles"
+                android:textColor="@color/cam_subtext"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <FrameLayout
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:background="@drawable/bg_toolbar_icon"
+                    android:padding="11dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_wrench" />
+                </FrameLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvGarageCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textColor="@color/cam_text"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Registered Vehicles"
+                        android:textColor="@color/cam_subtext"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/btnManageVehicles"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_secondary_button"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:text="Manage Vehicles"
+                android:textColor="@color/cam_primary"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:background="@drawable/bg_stat_card"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Security"
+                android:textColor="@color/cam_text"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
                 android:id="@+id/btnChangePassword"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="14dp"
                 android:background="@drawable/bg_secondary_button"
-                android:drawableStart="@drawable/ic_shield"
-                android:drawablePadding="6dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="Change Password"
-                android:textColor="@color/cam_text" />
+                android:orientation="horizontal">
 
-            <TextView
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_shield" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change Password"
+                    android:textColor="@color/cam_text" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/btnLogout"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -256,9 +616,22 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:text="Sign Out"
-                android:textColor="@color/cam_danger"
-                android:textStyle="bold" />
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_logout"
+                    android:tint="@color/cam_danger" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sign Out"
+                    android:textColor="@color/cam_danger"
+                    android:textStyle="bold" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

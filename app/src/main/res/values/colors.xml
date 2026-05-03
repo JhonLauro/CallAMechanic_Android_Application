@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="cam_bg">#EEF4FF</color>
+    <color name="cam_bg">#F8FBFF</color>
     <color name="cam_white">#FFFFFF</color>
     <color name="cam_text">#0F172A</color>
     <color name="cam_subtext">#64748B</color>

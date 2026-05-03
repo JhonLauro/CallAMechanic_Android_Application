@@ -9,6 +9,7 @@ import com.jhonlauro.callamechanic.ui.admin.AdminDashboardActivity
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
 import com.jhonlauro.callamechanic.ui.auth.RegisterActivity
 import com.jhonlauro.callamechanic.ui.client.ClientDashboardActivity
+import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import com.jhonlauro.callamechanic.ui.mechanic.MechanicDashboardActivity
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
                 else -> Intent(this, ClientDashboardActivity::class.java)
             }
             startActivity(intent)
+            AppTransitions.fade(this)
             finish()
             return
         }
@@ -37,14 +39,17 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnSignIn.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
+            AppTransitions.open(this)
         }
 
         binding.btnGetStarted.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
+            AppTransitions.open(this)
         }
 
         binding.btnBookService.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
+            AppTransitions.open(this)
         }
     }
 }

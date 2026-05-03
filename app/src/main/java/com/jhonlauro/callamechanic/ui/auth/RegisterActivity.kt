@@ -2,8 +2,13 @@ package com.jhonlauro.callamechanic.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.View
+import android.widget.EditText
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
+import com.jhonlauro.callamechanic.R
 import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.LoginResponse
 import com.jhonlauro.callamechanic.data.model.RegisterRequest
@@ -12,6 +17,8 @@ import com.jhonlauro.callamechanic.databinding.ActivityRegisterBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.admin.AdminDashboardActivity
 import com.jhonlauro.callamechanic.ui.client.ClientDashboardActivity
+import com.jhonlauro.callamechanic.ui.common.AppTransitions
+import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,6 +36,9 @@ class RegisterActivity : AppCompatActivity() {
 
         authRepository = AuthRepository()
         sessionManager = SessionManager(this)
+        FormScrollHelper.enable(binding.root)
+        setupPasswordToggle(binding.etPassword, binding.btnTogglePassword, "password")
+        setupPasswordToggle(binding.etConfirmPassword, binding.btnToggleConfirmPassword, "confirm password")
 
         binding.btnRegister.setOnClickListener {
             registerUser()
@@ -36,10 +46,27 @@ class RegisterActivity : AppCompatActivity() {
 
         binding.tvGoLogin.setOnClickListener {
             finish()
+            AppTransitions.close(this)
         }
 
         binding.btnBackHome.setOnClickListener {
             finish()
+            AppTransitions.close(this)
+        }
+    }
+
+    private fun setupPasswordToggle(field: EditText, button: ImageButton, label: String) {
+        var visible = false
+        button.setOnClickListener {
+            visible = !visible
+            field.transformationMethod = if (visible) {
+                HideReturnsTransformationMethod.getInstance()
+            } else {
+                PasswordTransformationMethod.getInstance()
+            }
+            field.setSelection(field.text?.length ?: 0)
+            button.setImageResource(if (visible) R.drawable.ic_eye else R.drawable.ic_eye_off)
+            button.contentDescription = if (visible) "Hide $label" else "Show $label"
         }
     }
 
@@ -104,7 +131,8 @@ class RegisterActivity : AppCompatActivity() {
                         fullName = registerData.user.fullName,
                         email = registerData.user.email,
                         adminId = registerData.user.adminId,
-                        phoneNumber = registerData.user.phoneNumber
+                        phoneNumber = registerData.user.phoneNumber,
+                        photoUrl = registerData.user.photoUrl
                     )
 
                     if (registerData.user.role.uppercase() == "ADMIN") {
@@ -112,6 +140,7 @@ class RegisterActivity : AppCompatActivity() {
                     } else {
                         startActivity(Intent(this@RegisterActivity, ClientDashboardActivity::class.java))
                     }
+                    AppTransitions.open(this@RegisterActivity)
                     finishAffinity()
                 } else {
                     binding.tvError.text = response.errorBody()?.string() ?: "Registration failed"

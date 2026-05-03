@@ -7,5 +7,8 @@ data class User(
     val role: String,
     val mechanicId: String?,
     val adminId: String?,
-    val phoneNumber: String?
+    val phoneNumber: String?,
+    val active: Boolean? = null,
+    val hasPhoto: Boolean? = null,
+    val photoUrl: String? = null
 )
