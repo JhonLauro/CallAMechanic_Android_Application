@@ -91,17 +91,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="18dp"
-            android:background="@drawable/bg_stat_card"
+            android:background="@drawable/bg_appointment_hero"
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:padding="22dp">
 
             <FrameLayout
                 android:id="@+id/profilePhotoContainer"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
+                android:layout_width="104dp"
+                android:layout_height="104dp"
                 android:background="@drawable/bg_avatar_circle"
-                android:clipToOutline="true">
+                android:clipChildren="false"
+                android:clipToPadding="false">
 
                 <ImageView
                     android:id="@+id/ivProfilePhoto"
@@ -111,10 +112,21 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_person"
                     android:tint="@android:color/white" />
+
+                <ImageView
+                    android:id="@+id/btnChangePhoto"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="bottom|end"
+                    android:background="@drawable/bg_camera_button"
+                    android:clickable="true"
+                    android:contentDescription="Change profile photo"
+                    android:focusable="true"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_camera" />
             </FrameLayout>
 
             <TextView
-                android:id="@+id/btnChangePhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_marginTop="12dp"
@@ -128,7 +140,8 @@
                 android:text="Change Photo"
                 android:textColor="@color/cam_primary"
                 android:textSize="13sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <ProgressBar
                 android:id="@+id/progressPhoto"
@@ -143,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Admin Name"
-                android:textColor="@color/cam_text"
+                android:textColor="@color/cam_white"
                 android:textSize="24sp"
                 android:textStyle="bold" />
 
@@ -153,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="ID"
-                android:textColor="@color/cam_subtext"
+                android:textColor="#EAF2FF"
                 android:textSize="15sp" />
 
             <LinearLayout
@@ -211,7 +224,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Edit Profile"
-                    android:textColor="@color/cam_text" />
+                    android:textColor="@color/cam_primary"
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
 

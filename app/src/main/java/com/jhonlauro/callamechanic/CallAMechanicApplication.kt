@@ -8,6 +8,7 @@ import com.jhonlauro.callamechanic.ui.common.SystemBars
 class CallAMechanicApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        com.jhonlauro.callamechanic.ui.common.ThemeManager.applySavedTheme(this)
 
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {

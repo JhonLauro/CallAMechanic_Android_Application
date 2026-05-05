@@ -37,6 +37,10 @@ import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrorOnInput
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrors
+import com.jhonlauro.callamechanic.ui.common.showFieldError
 import com.jhonlauro.callamechanic.ui.client.ManageVehiclesActivity
 import com.jhonlauro.callamechanic.utils.Constants
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -226,7 +230,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun uploadProfilePhoto(uri: Uri) {
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            Toast.makeText(this, "No active session found.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Session expired. Please sign in again.", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -263,7 +267,7 @@ class ProfileActivity : AppCompatActivity() {
                         }
                         Toast.makeText(this@ProfileActivity, "Profile photo updated.", Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(this@ProfileActivity, "Failed to upload profile photo.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@ProfileActivity, FriendlyError.fromResponse(response, "Request failed. Please try again."), Toast.LENGTH_SHORT).show()
                     }
                 }
 
@@ -272,7 +276,7 @@ class ProfileActivity : AppCompatActivity() {
                     t: Throwable
                 ) {
                     setPhotoBusy(false)
-                    Toast.makeText(this@ProfileActivity, t.message ?: "Failed to upload profile photo.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProfileActivity, FriendlyError.fromThrowable(t, "Request failed. Please try again."), Toast.LENGTH_SHORT).show()
                 }
             })
     }
@@ -396,7 +400,9 @@ class ProfileActivity : AppCompatActivity() {
     private fun setPhotoBusy(isBusy: Boolean) {
         binding.progressPhoto.visibility = if (isBusy) View.VISIBLE else View.GONE
         binding.btnChangePhoto.isEnabled = !isBusy
-        binding.btnChangePhoto.text = if (isBusy) "Uploading..." else "Change Photo"
+        binding.btnChangePhoto.alpha = if (isBusy) 0.45f else 1f
+        binding.btnChangePhoto.contentDescription =
+            if (isBusy) "Uploading profile photo" else "Change profile photo"
     }
 
     private fun showEditProfileDialog() {
@@ -408,6 +414,7 @@ class ProfileActivity : AppCompatActivity() {
         dialogBinding.etEditFullName.setText(sessionManager.getFullName() ?: "")
         dialogBinding.etEditPhone.setText(sessionManager.getPhoneNumber() ?: "")
         FormScrollHelper.enable(dialogBinding.root)
+        clearFieldErrorOnInput(dialogBinding.etEditFullName, dialogBinding.etEditPhone)
 
         dialogBinding.btnCancelEditProfile.setOnClickListener {
             dialog.dismiss()
@@ -427,14 +434,17 @@ class ProfileActivity : AppCompatActivity() {
         val fullName = dialogBinding.etEditFullName.text.toString().trim()
         val phoneNumber = dialogBinding.etEditPhone.text.toString().trim()
 
+        dialogBinding.tvEditProfileError.visibility = View.GONE
+        clearFieldErrors(dialogBinding.etEditFullName, dialogBinding.etEditPhone)
+
         if (fullName.isBlank()) {
-            showEditProfileError(dialogBinding, "Full name is required.")
+            showFieldError(dialogBinding.etEditFullName, "Full name is required.")
             return
         }
 
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            showEditProfileError(dialogBinding, "No active session found.")
+            showEditProfileError(dialogBinding, "Session expired. Please sign in again.")
             return
         }
 
@@ -455,13 +465,13 @@ class ProfileActivity : AppCompatActivity() {
                         dialog.dismiss()
                         Toast.makeText(this@ProfileActivity, "Profile updated.", Toast.LENGTH_SHORT).show()
                     } else {
-                        showEditProfileError(dialogBinding, "Failed to update profile.")
+                        showEditProfileError(dialogBinding, FriendlyError.fromResponse(response, "Validation failed. Please review your input."))
                     }
                 }
 
                 override fun onFailure(call: Call<ApiMessageResponse<User>>, t: Throwable) {
                     setEditProfileBusy(dialogBinding, false)
-                    showEditProfileError(dialogBinding, t.message ?: "Failed to update profile.")
+                    showEditProfileError(dialogBinding, FriendlyError.fromThrowable(t, "Request failed. Please try again."))
                 }
             })
     }
@@ -473,6 +483,7 @@ class ProfileActivity : AppCompatActivity() {
             .create()
 
         FormScrollHelper.enable(dialogBinding.root)
+        clearFieldErrorOnInput(dialogBinding.etCurrentPassword, dialogBinding.etNewPassword, dialogBinding.etConfirmPassword)
 
         dialogBinding.btnCancelPassword.setOnClickListener {
             dialog.dismiss()
@@ -493,28 +504,31 @@ class ProfileActivity : AppCompatActivity() {
         val newPassword = dialogBinding.etNewPassword.text.toString()
         val confirmPassword = dialogBinding.etConfirmPassword.text.toString()
 
+        dialogBinding.tvPasswordError.visibility = View.GONE
+        clearFieldErrors(dialogBinding.etCurrentPassword, dialogBinding.etNewPassword, dialogBinding.etConfirmPassword)
+
         when {
             currentPassword.isBlank() -> {
-                showPasswordError(dialogBinding, "Current password is required.")
+                showFieldError(dialogBinding.etCurrentPassword, "Current password is required.")
                 return
             }
             newPassword.length < 8 -> {
-                showPasswordError(dialogBinding, "New password must be at least 8 characters.")
+                showFieldError(dialogBinding.etNewPassword, "New password must be at least 8 characters.")
                 return
             }
             newPassword != confirmPassword -> {
-                showPasswordError(dialogBinding, "New passwords do not match.")
+                showFieldError(dialogBinding.etConfirmPassword, "New passwords do not match.")
                 return
             }
             currentPassword == newPassword -> {
-                showPasswordError(dialogBinding, "New password must be different from your current password.")
+                showFieldError(dialogBinding.etNewPassword, "New password must be different from your current password.")
                 return
             }
         }
 
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            showPasswordError(dialogBinding, "No active session found.")
+            showPasswordError(dialogBinding, "Session expired. Please sign in again.")
             return
         }
 
@@ -531,13 +545,18 @@ class ProfileActivity : AppCompatActivity() {
                         dialog.dismiss()
                         Toast.makeText(this@ProfileActivity, "Password updated.", Toast.LENGTH_SHORT).show()
                     } else {
-                        showPasswordError(dialogBinding, "Failed to update password. Check your current password.")
+                        val message = FriendlyError.fromResponse(response, "Validation failed. Please review your input.")
+                        if (message.contains("password", ignoreCase = true)) {
+                            showFieldError(dialogBinding.etCurrentPassword, "Current password is incorrect.")
+                        } else {
+                            showPasswordError(dialogBinding, message)
+                        }
                     }
                 }
 
                 override fun onFailure(call: Call<ApiMessageResponse<Any>>, t: Throwable) {
                     setPasswordBusy(dialogBinding, false)
-                    showPasswordError(dialogBinding, t.message ?: "Failed to update password.")
+                    showPasswordError(dialogBinding, FriendlyError.fromThrowable(t, "Request failed. Please try again."))
                 }
             })
     }

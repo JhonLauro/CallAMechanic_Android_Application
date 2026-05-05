@@ -3,6 +3,8 @@ package com.jhonlauro.callamechanic.ui.admin
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,8 +14,10 @@ import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.DeleteUserResponse
 import com.jhonlauro.callamechanic.data.repository.AdminRepository
 import com.jhonlauro.callamechanic.databinding.ActivityUserRegistryBinding
+import com.jhonlauro.callamechanic.databinding.DialogDeleteUserBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -52,7 +56,7 @@ class UserRegistryActivity : AppCompatActivity() {
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
             binding.tvEmptyUsers.visibility = View.VISIBLE
-            binding.tvEmptyUsers.text = "No active session found"
+            binding.tvEmptyUsers.text = "Session expired. Please sign in again."
             return
         }
 
@@ -70,6 +74,11 @@ class UserRegistryActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val users = response.body()?.data?.users ?: emptyList()
                         adapter.updateData(users)
+                        binding.tvRegistryTotal.text = users.size.toString()
+                        binding.tvRegistryMechanics.text =
+                            users.count { it.role.equals("MECHANIC", ignoreCase = true) }.toString()
+                        binding.tvRegistryClients.text =
+                            users.count { it.role.equals("CLIENT", ignoreCase = true) }.toString()
 
                         if (users.isEmpty()) {
                             binding.tvEmptyUsers.visibility = View.VISIBLE
@@ -78,8 +87,11 @@ class UserRegistryActivity : AppCompatActivity() {
                             binding.tvEmptyUsers.visibility = View.GONE
                         }
                     } else {
+                        binding.tvRegistryTotal.text = "0"
+                        binding.tvRegistryMechanics.text = "0"
+                        binding.tvRegistryClients.text = "0"
                         binding.tvEmptyUsers.visibility = View.VISIBLE
-                        binding.tvEmptyUsers.text = "Failed to load users"
+                        binding.tvEmptyUsers.text = FriendlyError.fromResponse(response, "Request failed. Please try again.")
                     }
                 }
 
@@ -88,21 +100,41 @@ class UserRegistryActivity : AppCompatActivity() {
                     t: Throwable
                 ) {
                     binding.progressBarUsers.visibility = View.GONE
+                    binding.tvRegistryTotal.text = "0"
+                    binding.tvRegistryMechanics.text = "0"
+                    binding.tvRegistryClients.text = "0"
                     binding.tvEmptyUsers.visibility = View.VISIBLE
-                    binding.tvEmptyUsers.text = t.message ?: "Something went wrong"
+                    binding.tvEmptyUsers.text = FriendlyError.fromThrowable(t, "Request failed. Please try again.")
                 }
             })
     }
 
     private fun confirmDeleteUser(user: AdminUser) {
-        AlertDialog.Builder(this)
-            .setTitle("Delete user?")
-            .setMessage("This will remove ${user.fullName ?: "this user"} from the system.")
-            .setNegativeButton("Cancel", null)
-            .setPositiveButton("Delete") { _, _ ->
-                deleteUser(user)
-            }
-            .show()
+        val dialogBinding = DialogDeleteUserBinding.inflate(layoutInflater)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogBinding.root)
+            .create()
+
+        dialogBinding.tvDeleteUserName.text = user.fullName ?: "Unnamed user"
+        dialogBinding.tvDeleteUserDetails.text = listOfNotNull(
+            user.role,
+            user.email,
+            user.mechanicId
+        ).filter { it.isNotBlank() }.joinToString("  •  ")
+
+        dialogBinding.btnCancelDelete.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnConfirmDelete.setOnClickListener {
+            dialog.dismiss()
+            deleteUser(user)
+        }
+
+        dialog.setOnShowListener {
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        }
+        dialog.show()
     }
 
     private fun deleteUser(user: AdminUser) {
@@ -125,7 +157,7 @@ class UserRegistryActivity : AppCompatActivity() {
                     } else {
                         Toast.makeText(
                             this@UserRegistryActivity,
-                            "Failed to delete user",
+                            FriendlyError.fromResponse(response, "Request failed. Please try again."),
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -137,7 +169,7 @@ class UserRegistryActivity : AppCompatActivity() {
                 ) {
                     Toast.makeText(
                         this@UserRegistryActivity,
-                        t.message ?: "Something went wrong",
+                        FriendlyError.fromThrowable(t, "Request failed. Please try again."),
                         Toast.LENGTH_SHORT
                     ).show()
                 }

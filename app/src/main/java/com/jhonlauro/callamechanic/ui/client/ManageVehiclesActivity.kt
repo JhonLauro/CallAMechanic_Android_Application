@@ -7,6 +7,7 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.jhonlauro.callamechanic.R
 import com.jhonlauro.callamechanic.data.model.ApiMessageResponse
 import com.jhonlauro.callamechanic.data.model.Vehicle
 import com.jhonlauro.callamechanic.data.model.VehicleRequest
@@ -15,6 +16,10 @@ import com.jhonlauro.callamechanic.databinding.ActivityManageVehiclesBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrorOnInput
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrors
+import com.jhonlauro.callamechanic.ui.common.showFieldError
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,6 +53,7 @@ class ManageVehiclesActivity : AppCompatActivity() {
         adapter = VehicleAdapter(emptyList()) { vehicle -> confirmDelete(vehicle) }
 
         FormScrollHelper.enable(binding.root)
+        clearFieldErrorOnInput(binding.etMake, binding.etModel, binding.etYear, binding.etPlateNumber, binding.etColor)
         binding.rvVehicles.layoutManager = LinearLayoutManager(this)
         binding.rvVehicles.adapter = adapter
 
@@ -82,7 +88,7 @@ class ManageVehiclesActivity : AppCompatActivity() {
     private fun loadVehicles() {
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            showError("No active session found")
+            showError("Session expired. Please sign in again.")
             return
         }
 
@@ -100,13 +106,13 @@ class ManageVehiclesActivity : AppCompatActivity() {
                     binding.tvVehiclesEmpty.visibility = if (vehicles.isEmpty()) View.VISIBLE else View.GONE
                     binding.tvVehicleError.visibility = View.GONE
                 } else {
-                    showError("Failed to load vehicles")
+                    showError(FriendlyError.fromResponse(response, "Request failed. Please try again."))
                 }
             }
 
             override fun onFailure(call: Call<ApiMessageResponse<List<Vehicle>>>, t: Throwable) {
                 binding.progressBarVehicles.visibility = View.GONE
-                showError(t.message ?: "Something went wrong")
+                showError(FriendlyError.fromThrowable(t, "Request failed. Please try again."))
             }
         })
     }
@@ -120,19 +126,49 @@ class ManageVehiclesActivity : AppCompatActivity() {
         val type = binding.spVehicleType.selectedItem?.toString().orEmpty()
         val notes = binding.etNotes.text.toString().trim()
 
-        if (make.isEmpty() || model.isEmpty() || year.isEmpty() || plate.isEmpty() || color.isEmpty() || type == vehicleTypes.first()) {
-            showError("Please complete all required vehicle details")
+        binding.tvVehicleError.visibility = View.GONE
+        clearFieldErrors(binding.etMake, binding.etModel, binding.etYear, binding.etPlateNumber, binding.etColor)
+        binding.spVehicleType.setBackgroundResource(R.drawable.bg_input)
+
+        if (make.isEmpty()) {
+            showFieldError(binding.etMake, "Make is required.")
+            return
+        }
+
+        if (model.isEmpty()) {
+            showFieldError(binding.etModel, "Model is required.")
+            return
+        }
+
+        if (year.isEmpty()) {
+            showFieldError(binding.etYear, "Year is required.")
+            return
+        }
+
+        if (plate.isEmpty()) {
+            showFieldError(binding.etPlateNumber, "Plate number is required.")
+            return
+        }
+
+        if (color.isEmpty()) {
+            showFieldError(binding.etColor, "Color is required.")
+            return
+        }
+
+        if (type == vehicleTypes.first()) {
+            binding.spVehicleType.setBackgroundResource(R.drawable.bg_input_error)
+            showError("Vehicle type is required.")
             return
         }
 
         if (!Regex("^\\d{4}$").matches(year)) {
-            showError("Year must be a valid 4-digit year")
+            showFieldError(binding.etYear, "Year must be a valid 4-digit year.")
             return
         }
 
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            showError("No active session found")
+            showError("Session expired. Please sign in again.")
             return
         }
 
@@ -154,14 +190,14 @@ class ManageVehiclesActivity : AppCompatActivity() {
                     Toast.makeText(this@ManageVehiclesActivity, "Vehicle registered", Toast.LENGTH_SHORT).show()
                     loadVehicles()
                 } else {
-                    showError("Failed to register vehicle")
+                    showError(FriendlyError.fromResponse(response, "Validation failed. Please review your input."))
                 }
             }
 
             override fun onFailure(call: Call<ApiMessageResponse<Vehicle>>, t: Throwable) {
                 binding.progressBarVehicles.visibility = View.GONE
                 binding.btnSaveVehicle.isEnabled = true
-                showError(t.message ?: "Failed to register vehicle")
+                showError(FriendlyError.fromThrowable(t, "Request failed. Please try again."))
             }
         })
     }
@@ -188,13 +224,13 @@ class ManageVehiclesActivity : AppCompatActivity() {
                     Toast.makeText(this@ManageVehiclesActivity, "Vehicle deleted", Toast.LENGTH_SHORT).show()
                     loadVehicles()
                 } else {
-                    showError("Failed to delete vehicle")
+                    showError(FriendlyError.fromResponse(response, "Request failed. Please try again."))
                 }
             }
 
             override fun onFailure(call: Call<ApiMessageResponse<Any>>, t: Throwable) {
                 binding.progressBarVehicles.visibility = View.GONE
-                showError(t.message ?: "Failed to delete vehicle")
+                showError(FriendlyError.fromThrowable(t, "Request failed. Please try again."))
             }
         })
     }

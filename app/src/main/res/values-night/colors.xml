@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cam_bg">#07111F</color>
+    <color name="cam_white">#0F1F36</color>
+    <color name="cam_text">#EAF2FF</color>
+    <color name="cam_subtext">#9FB4D2</color>
+    <color name="cam_primary">#60A5FA</color>
+    <color name="cam_primary_dark">#3B82F6</color>
+    <color name="cam_border">#2A4367</color>
+    <color name="cam_admin">#C4B5FD</color>
+    <color name="cam_admin_light">#2A1C4D</color>
+    <color name="cam_success">#86EFAC</color>
+    <color name="cam_success_bg">#123820</color>
+    <color name="cam_blue_bg">#172D4A</color>
+    <color name="cam_danger">#FCA5A5</color>
+</resources>

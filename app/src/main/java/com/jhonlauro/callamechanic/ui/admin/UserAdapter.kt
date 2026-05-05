@@ -3,6 +3,7 @@ package com.jhonlauro.callamechanic.ui.admin
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.jhonlauro.callamechanic.R
 import com.jhonlauro.callamechanic.data.model.AdminUser
 import com.jhonlauro.callamechanic.databinding.ItemUserBinding
 
@@ -16,9 +17,19 @@ class UserAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: AdminUser) {
-            binding.tvUserName.text = item.fullName ?: "No name"
+            val name = item.fullName ?: "No name"
+            val role = item.role ?: "-"
+            binding.tvUserName.text = name
+            binding.tvUserId.text = "#${item.id}"
             binding.tvUserEmail.text = item.email ?: "-"
-            binding.tvUserRole.text = item.role ?: "-"
+            binding.tvUserRole.text = role
+            if (role.equals("MECHANIC", ignoreCase = true)) {
+                binding.tvUserRole.setBackgroundResource(R.drawable.bg_chip_admin)
+                binding.tvUserRole.setTextColor(binding.root.context.getColor(R.color.cam_admin))
+            } else {
+                binding.tvUserRole.setBackgroundResource(R.drawable.bg_chip_blue)
+                binding.tvUserRole.setTextColor(binding.root.context.getColor(R.color.cam_primary))
+            }
             binding.tvUserExtra.text = if (!item.mechanicId.isNullOrEmpty()) {
                 "Mechanic ID: ${item.mechanicId}"
             } else {

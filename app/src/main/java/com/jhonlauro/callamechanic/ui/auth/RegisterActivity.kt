@@ -19,6 +19,10 @@ import com.jhonlauro.callamechanic.ui.admin.AdminDashboardActivity
 import com.jhonlauro.callamechanic.ui.client.ClientDashboardActivity
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrorOnInput
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrors
+import com.jhonlauro.callamechanic.ui.common.showFieldError
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,6 +41,7 @@ class RegisterActivity : AppCompatActivity() {
         authRepository = AuthRepository()
         sessionManager = SessionManager(this)
         FormScrollHelper.enable(binding.root)
+        clearFieldErrorOnInput(binding.etFullName, binding.etEmail, binding.etPhoneNumber, binding.etPassword, binding.etConfirmPassword)
         setupPasswordToggle(binding.etPassword, binding.btnTogglePassword, "password")
         setupPasswordToggle(binding.etConfirmPassword, binding.btnToggleConfirmPassword, "confirm password")
 
@@ -78,28 +83,45 @@ class RegisterActivity : AppCompatActivity() {
         val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
         binding.tvError.visibility = View.GONE
+        clearFieldErrors(binding.etFullName, binding.etEmail, binding.etPhoneNumber, binding.etPassword, binding.etConfirmPassword)
 
-        if (fullName.isEmpty() || email.isEmpty() || phoneNumber.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            binding.tvError.text = "All fields are required"
-            binding.tvError.visibility = View.VISIBLE
+        if (fullName.isEmpty()) {
+            showFieldError(binding.etFullName, "Full name is required.")
+            return
+        }
+
+        if (email.isEmpty()) {
+            showFieldError(binding.etEmail, "Email is required.")
+            return
+        }
+
+        if (phoneNumber.isEmpty()) {
+            showFieldError(binding.etPhoneNumber, "Phone number is required.")
+            return
+        }
+
+        if (password.isEmpty()) {
+            showFieldError(binding.etPassword, "Password is required.")
+            return
+        }
+
+        if (confirmPassword.isEmpty()) {
+            showFieldError(binding.etConfirmPassword, "Please confirm your password.")
             return
         }
 
         if (!email.contains("@")) {
-            binding.tvError.text = "Invalid email"
-            binding.tvError.visibility = View.VISIBLE
+            showFieldError(binding.etEmail, "Please enter a valid email address.")
             return
         }
 
         if (password.length < 8) {
-            binding.tvError.text = "Password must be at least 8 characters"
-            binding.tvError.visibility = View.VISIBLE
+            showFieldError(binding.etPassword, "Password must be at least 8 characters.")
             return
         }
 
         if (password != confirmPassword) {
-            binding.tvError.text = "Passwords do not match"
-            binding.tvError.visibility = View.VISIBLE
+            showFieldError(binding.etConfirmPassword, "Passwords do not match.")
             return
         }
 
@@ -143,8 +165,13 @@ class RegisterActivity : AppCompatActivity() {
                     AppTransitions.open(this@RegisterActivity)
                     finishAffinity()
                 } else {
-                    binding.tvError.text = response.errorBody()?.string() ?: "Registration failed"
-                    binding.tvError.visibility = View.VISIBLE
+                    val message = FriendlyError.fromResponse(response, "Validation failed. Please review your input.")
+                    if (message.contains("email", ignoreCase = true) && message.contains("already", ignoreCase = true)) {
+                        showFieldError(binding.etEmail, "This email is already registered. Use another email or sign in.")
+                    } else {
+                        binding.tvError.text = message
+                        binding.tvError.visibility = View.VISIBLE
+                    }
                 }
             }
 
@@ -154,7 +181,7 @@ class RegisterActivity : AppCompatActivity() {
             ) {
                 binding.progressBar.visibility = View.GONE
                 binding.btnRegister.isEnabled = true
-                binding.tvError.text = t.message ?: "Something went wrong"
+                binding.tvError.text = FriendlyError.fromThrowable(t, "Request failed. Please try again.")
                 binding.tvError.visibility = View.VISIBLE
             }
         })

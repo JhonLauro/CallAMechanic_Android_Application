@@ -17,6 +17,9 @@ import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.appointment.AppointmentDetailsActivity
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
+import com.jhonlauro.callamechanic.ui.common.DashboardNotification
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.NotificationPopup
 import com.jhonlauro.callamechanic.ui.common.ProfileDropdown
 import com.jhonlauro.callamechanic.ui.common.ProfilePhotoRenderer
 import com.jhonlauro.callamechanic.ui.profile.ProfileActivity
@@ -32,6 +35,9 @@ class ClientDashboardActivity : AppCompatActivity() {
     private lateinit var profileRepository: ProfileRepository
     private lateinit var vehicleRepository: VehicleRepository
     private lateinit var adapter: AppointmentAdapter
+    private var currentAppointments: List<Appointment> = emptyList()
+    private var currentVehicleCount: Int = 0
+    private var notificationItems: List<DashboardNotification> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,6 +72,12 @@ class ClientDashboardActivity : AppCompatActivity() {
 
         binding.btnProfile.setOnClickListener {
             showProfileMenu()
+        }
+
+        binding.btnNotifications.setOnClickListener {
+            NotificationPopup.show(binding.btnNotifications, notificationItems) {
+                updateNotificationBadge()
+            }
         }
 
         binding.btnLogout.visibility = View.GONE
@@ -107,7 +119,7 @@ class ClientDashboardActivity : AppCompatActivity() {
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
             binding.tvEmptyState.visibility = View.VISIBLE
-            binding.tvEmptyState.text = "No active session found"
+            binding.tvEmptyState.text = "Session expired. Please sign in again."
             return
         }
 
@@ -125,6 +137,7 @@ class ClientDashboardActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val appointments = (response.body()?.data ?: emptyList())
                             .sortedWith(newestAppointmentFirst())
+                        currentAppointments = appointments
                         adapter.updateData(appointments)
 
                         val activeCount = appointments.count {
@@ -143,9 +156,10 @@ class ClientDashboardActivity : AppCompatActivity() {
                         } else {
                             binding.tvEmptyState.visibility = View.GONE
                         }
+                        updateNotifications()
                     } else {
                         binding.tvEmptyState.visibility = View.VISIBLE
-                        binding.tvEmptyState.text = "Failed to load appointments"
+                        binding.tvEmptyState.text = FriendlyError.fromResponse(response, "Request failed. Please try again.")
                     }
                 }
 
@@ -155,7 +169,7 @@ class ClientDashboardActivity : AppCompatActivity() {
                 ) {
                     binding.progressBar.visibility = View.GONE
                     binding.tvEmptyState.visibility = View.VISIBLE
-                    binding.tvEmptyState.text = t.message ?: "Something went wrong"
+                    binding.tvEmptyState.text = FriendlyError.fromThrowable(t, "Request failed. Please try again.")
                 }
             })
     }
@@ -174,8 +188,9 @@ class ClientDashboardActivity : AppCompatActivity() {
                     response: Response<ApiMessageResponse<List<Vehicle>>>
                 ) {
                     if (response.isSuccessful && response.body()?.success == true) {
-                        binding.tvRegisteredVehicles.text =
-                            (response.body()?.data ?: emptyList()).size.toString()
+                        currentVehicleCount = (response.body()?.data ?: emptyList()).size
+                        binding.tvRegisteredVehicles.text = currentVehicleCount.toString()
+                        updateNotifications()
                     }
                 }
 
@@ -183,9 +198,60 @@ class ClientDashboardActivity : AppCompatActivity() {
                     call: Call<ApiMessageResponse<List<Vehicle>>>,
                     t: Throwable
                 ) {
+                    currentVehicleCount = 0
                     binding.tvRegisteredVehicles.text = "0"
+                    updateNotifications()
                 }
             })
+    }
+
+    private fun updateNotifications() {
+        val activeUpdates = currentAppointments
+            .filter { it.status == "PENDING" || it.status == "IN_PROGRESS" }
+            .take(4)
+            .map { appointment ->
+                val inProgress = appointment.status == "IN_PROGRESS"
+                DashboardNotification(
+                    id = "client-${appointment.status}-${appointment.id}",
+                    title = if (inProgress) "Service in progress" else "Appointment awaiting assignment",
+                    message = "${appointment.vehicleInfo ?: "Your vehicle"} - ${appointment.serviceType ?: appointment.problemDescription ?: "Service request"}",
+                    tone = if (inProgress) DashboardNotification.Tone.INFO else DashboardNotification.Tone.WARNING,
+                    time = appointment.scheduledDate
+                )
+            }
+
+        val finishedUpdates = currentAppointments
+            .filter { it.status == "FINISHED" || it.status == "COMPLETED" }
+            .take(3)
+            .map { appointment ->
+                DashboardNotification(
+                    id = "client-finished-${appointment.id}",
+                    title = "Service completed",
+                    message = "${appointment.vehicleInfo ?: "Your vehicle"} is marked finished.",
+                    tone = DashboardNotification.Tone.SUCCESS,
+                    time = appointment.scheduledDate
+                )
+            }
+
+        val vehicleReminder = if (currentVehicleCount == 0) {
+            listOf(
+                DashboardNotification(
+                    id = "client-register-vehicle",
+                    title = "Register a vehicle first",
+                    message = "Add a vehicle before booking an appointment.",
+                    tone = DashboardNotification.Tone.WARNING
+                )
+            )
+        } else {
+            emptyList()
+        }
+
+        notificationItems = vehicleReminder + activeUpdates + finishedUpdates
+        updateNotificationBadge()
+    }
+
+    private fun updateNotificationBadge() {
+        NotificationPopup.updateBadge(this, binding.tvNotificationBadge, notificationItems)
     }
 
     private fun showProfileMenu() {

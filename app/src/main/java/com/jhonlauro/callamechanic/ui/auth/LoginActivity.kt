@@ -19,6 +19,10 @@ import com.jhonlauro.callamechanic.ui.admin.AdminDashboardActivity
 import com.jhonlauro.callamechanic.ui.client.ClientDashboardActivity
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrorOnInput
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrors
+import com.jhonlauro.callamechanic.ui.common.showFieldError
 import com.jhonlauro.callamechanic.ui.mechanic.MechanicDashboardActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -38,6 +42,7 @@ class LoginActivity : AppCompatActivity() {
         authRepository = AuthRepository()
         sessionManager = SessionManager(this)
         FormScrollHelper.enable(binding.root)
+        clearFieldErrorOnInput(binding.etIdentifier, binding.etPassword)
         setupPasswordToggle(binding.etPassword, binding.btnTogglePassword)
 
         binding.btnLogin.setOnClickListener {
@@ -75,16 +80,15 @@ class LoginActivity : AppCompatActivity() {
         val password = binding.etPassword.text.toString().trim()
 
         binding.tvError.visibility = View.GONE
+        clearFieldErrors(binding.etIdentifier, binding.etPassword)
 
         if (identifier.isEmpty()) {
-            binding.tvError.text = "Identifier is required"
-            binding.tvError.visibility = View.VISIBLE
+            showFieldError(binding.etIdentifier, "Email or ID is required.")
             return
         }
 
         if (password.isEmpty()) {
-            binding.tvError.text = "Password is required"
-            binding.tvError.visibility = View.VISIBLE
+            showFieldError(binding.etPassword, "Password is required.")
             return
         }
 
@@ -125,8 +129,14 @@ class LoginActivity : AppCompatActivity() {
                     AppTransitions.open(this@LoginActivity)
                     finish()
                 } else {
-                    binding.tvError.text = response.errorBody()?.string() ?: "Login failed"
-                    binding.tvError.visibility = View.VISIBLE
+                    val message = FriendlyError.fromResponse(response, FriendlyError.invalidLogin())
+                    if (message == FriendlyError.invalidLogin()) {
+                        showFieldError(binding.etIdentifier, "Check the email, mechanic ID, or admin ID you entered.")
+                        showFieldError(binding.etPassword, "Check your password and try again.")
+                    } else {
+                        binding.tvError.text = message
+                        binding.tvError.visibility = View.VISIBLE
+                    }
                 }
             }
 
@@ -136,7 +146,7 @@ class LoginActivity : AppCompatActivity() {
             ) {
                 binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
-                binding.tvError.text = t.message ?: "Something went wrong"
+                binding.tvError.text = FriendlyError.fromThrowable(t, "Request failed. Please try again.")
                 binding.tvError.visibility = View.VISIBLE
             }
         })

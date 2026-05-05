@@ -17,6 +17,10 @@ import com.jhonlauro.callamechanic.databinding.ActivityCreateMechanicBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrorOnInput
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrors
+import com.jhonlauro.callamechanic.ui.common.showFieldError
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,6 +39,7 @@ class CreateMechanicActivity : AppCompatActivity() {
         adminRepository = AdminRepository()
         sessionManager = SessionManager(this)
         FormScrollHelper.enable(binding.root)
+        clearFieldErrorOnInput(binding.etMechanicFullName, binding.etMechanicEmail, binding.etMechanicPhone, binding.etMechanicPassword, binding.etMechanicId)
         setupPasswordToggle(binding.etMechanicPassword, binding.btnToggleMechanicPassword)
 
         binding.btnCreateMechanicSubmit.setOnClickListener {
@@ -70,28 +75,46 @@ class CreateMechanicActivity : AppCompatActivity() {
         val mechanicId = binding.etMechanicId.text.toString().trim()
 
         binding.tvCreateMechanicError.visibility = View.GONE
+        clearFieldErrors(binding.etMechanicFullName, binding.etMechanicEmail, binding.etMechanicPhone, binding.etMechanicPassword, binding.etMechanicId)
 
-        if (fullName.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty() || mechanicId.isEmpty()) {
-            binding.tvCreateMechanicError.text = "All fields are required"
-            binding.tvCreateMechanicError.visibility = View.VISIBLE
+        if (fullName.isEmpty()) {
+            showFieldError(binding.etMechanicFullName, "Full name is required.")
+            return
+        }
+
+        if (email.isEmpty()) {
+            showFieldError(binding.etMechanicEmail, "Email is required.")
+            return
+        }
+
+        if (phone.isEmpty()) {
+            showFieldError(binding.etMechanicPhone, "Phone number is required.")
+            return
+        }
+
+        if (password.isEmpty()) {
+            showFieldError(binding.etMechanicPassword, "Password is required.")
+            return
+        }
+
+        if (mechanicId.isEmpty()) {
+            showFieldError(binding.etMechanicId, "Mechanic ID is required.")
             return
         }
 
         if (!email.contains("@")) {
-            binding.tvCreateMechanicError.text = "Invalid email"
-            binding.tvCreateMechanicError.visibility = View.VISIBLE
+            showFieldError(binding.etMechanicEmail, "Invalid email format.")
             return
         }
 
         if (password.length < 8) {
-            binding.tvCreateMechanicError.text = "Password must be at least 8 characters"
-            binding.tvCreateMechanicError.visibility = View.VISIBLE
+            showFieldError(binding.etMechanicPassword, "Password must be at least 8 characters.")
             return
         }
 
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            binding.tvCreateMechanicError.text = "No active session found"
+            binding.tvCreateMechanicError.text = "Session expired. Please sign in again."
             binding.tvCreateMechanicError.visibility = View.VISIBLE
             return
         }
@@ -125,9 +148,19 @@ class CreateMechanicActivity : AppCompatActivity() {
                         finish()
                         AppTransitions.close(this@CreateMechanicActivity)
                     } else {
-                        binding.tvCreateMechanicError.text =
-                            response.errorBody()?.string() ?: "Failed to create mechanic"
-                        binding.tvCreateMechanicError.visibility = View.VISIBLE
+                        val message = FriendlyError.fromResponse(response, "Validation failed. Please review your input.")
+                        when {
+                            message.contains("email", ignoreCase = true) && message.contains("already", ignoreCase = true) -> {
+                                showFieldError(binding.etMechanicEmail, "This email is already registered.")
+                            }
+                            message.contains("mechanic", ignoreCase = true) && message.contains("already", ignoreCase = true) -> {
+                                showFieldError(binding.etMechanicId, "This mechanic ID is already in use.")
+                            }
+                            else -> {
+                                binding.tvCreateMechanicError.text = message
+                                binding.tvCreateMechanicError.visibility = View.VISIBLE
+                            }
+                        }
                     }
                 }
 
@@ -137,7 +170,7 @@ class CreateMechanicActivity : AppCompatActivity() {
                 ) {
                     binding.progressBarCreateMechanic.visibility = View.GONE
                     binding.btnCreateMechanicSubmit.isEnabled = true
-                    binding.tvCreateMechanicError.text = t.message ?: "Something went wrong"
+                    binding.tvCreateMechanicError.text = FriendlyError.fromThrowable(t, "Request failed. Please try again.")
                     binding.tvCreateMechanicError.visibility = View.VISIBLE
                 }
             })

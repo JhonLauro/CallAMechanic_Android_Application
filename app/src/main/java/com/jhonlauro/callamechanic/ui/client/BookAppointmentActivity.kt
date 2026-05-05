@@ -1,6 +1,7 @@
 package com.jhonlauro.callamechanic.ui.client
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -15,6 +16,10 @@ import com.jhonlauro.callamechanic.databinding.ActivityBookAppointmentBinding
 import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
 import com.jhonlauro.callamechanic.ui.common.FormScrollHelper
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrorOnInput
+import com.jhonlauro.callamechanic.ui.common.clearFieldErrors
+import com.jhonlauro.callamechanic.ui.common.showFieldError
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -26,6 +31,7 @@ class BookAppointmentActivity : AppCompatActivity() {
     private lateinit var vehicleRepository: VehicleRepository
     private lateinit var sessionManager: SessionManager
     private var vehicles: List<Vehicle> = emptyList()
+    private var selectedVehicleInfo: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +42,7 @@ class BookAppointmentActivity : AppCompatActivity() {
         vehicleRepository = VehicleRepository()
         sessionManager = SessionManager(this)
         FormScrollHelper.enable(binding.root)
+        clearFieldErrorOnInput(binding.etServiceType, binding.etVehicleInfo, binding.etProblemDescription, binding.etScheduledDate)
 
         binding.btnSubmitAppointment.setOnClickListener {
             submitAppointment()
@@ -48,6 +55,12 @@ class BookAppointmentActivity : AppCompatActivity() {
 
         binding.etVehicleInfo.setOnClickListener {
             showVehiclePicker()
+        }
+        binding.etVehicleInfo.apply {
+            isFocusable = false
+            isCursorVisible = false
+            keyListener = null
+            hint = "Loading registered vehicles..."
         }
 
         loadVehicles()
@@ -63,6 +76,13 @@ class BookAppointmentActivity : AppCompatActivity() {
                 ) {
                     if (response.isSuccessful && response.body()?.success == true) {
                         vehicles = response.body()?.data ?: emptyList()
+                        selectedVehicleInfo = null
+                        binding.etVehicleInfo.text?.clear()
+                        binding.etVehicleInfo.hint = if (vehicles.isEmpty()) {
+                            "Register a vehicle before booking"
+                        } else {
+                            "Tap to select a registered vehicle"
+                        }
                     }
                 }
 
@@ -71,39 +91,72 @@ class BookAppointmentActivity : AppCompatActivity() {
                     t: Throwable
                 ) {
                     vehicles = emptyList()
+                    selectedVehicleInfo = null
+                    binding.etVehicleInfo.text?.clear()
+                    binding.etVehicleInfo.hint = "Register a vehicle before booking"
                 }
             })
     }
 
     private fun showVehiclePicker() {
-        if (vehicles.isEmpty()) return
+        binding.tvError.visibility = View.GONE
+        clearFieldErrors(binding.etVehicleInfo)
+
+        if (vehicles.isEmpty()) {
+            showFieldError(binding.etVehicleInfo, "Register a vehicle before booking an appointment.")
+            showRegisterVehiclePrompt()
+            return
+        }
 
         val labels = vehicles.map { it.displayName() }.toTypedArray()
         AlertDialog.Builder(this)
             .setTitle("Select Vehicle")
             .setItems(labels) { _, which ->
+                selectedVehicleInfo = labels[which]
                 binding.etVehicleInfo.setText(labels[which])
+                clearFieldErrors(binding.etVehicleInfo)
             }
             .show()
     }
 
     private fun submitAppointment() {
         val serviceType = binding.etServiceType.text.toString().trim()
-        val vehicleInfo = binding.etVehicleInfo.text.toString().trim()
+        val vehicleInfo = selectedVehicleInfo.orEmpty()
         val problemDescription = binding.etProblemDescription.text.toString().trim()
         val scheduledDate = binding.etScheduledDate.text.toString().trim()
 
         binding.tvError.visibility = View.GONE
+        clearFieldErrors(binding.etServiceType, binding.etVehicleInfo, binding.etProblemDescription, binding.etScheduledDate)
 
-        if (serviceType.isEmpty() || vehicleInfo.isEmpty() || problemDescription.isEmpty() || scheduledDate.isEmpty()) {
-            binding.tvError.text = "All fields are required"
-            binding.tvError.visibility = View.VISIBLE
+        if (serviceType.isEmpty()) {
+            showFieldError(binding.etServiceType, "Service type is required.")
+            return
+        }
+
+        if (vehicles.isEmpty()) {
+            showFieldError(binding.etVehicleInfo, "Register a vehicle before booking an appointment.")
+            showRegisterVehiclePrompt()
+            return
+        }
+
+        if (vehicleInfo.isEmpty()) {
+            showFieldError(binding.etVehicleInfo, "Select one of your registered vehicles.")
+            return
+        }
+
+        if (problemDescription.isEmpty()) {
+            showFieldError(binding.etProblemDescription, "Problem description is required.")
+            return
+        }
+
+        if (scheduledDate.isEmpty()) {
+            showFieldError(binding.etScheduledDate, "Date is required.")
             return
         }
 
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            binding.tvError.text = "No active session found"
+            binding.tvError.text = "Session expired. Please sign in again."
             binding.tvError.visibility = View.VISIBLE
             return
         }
@@ -136,7 +189,7 @@ class BookAppointmentActivity : AppCompatActivity() {
                         finish()
                         AppTransitions.close(this@BookAppointmentActivity)
                     } else {
-                        binding.tvError.text = response.errorBody()?.string() ?: "Failed to book appointment"
+                        binding.tvError.text = FriendlyError.fromResponse(response, "Validation failed. Please review your input.")
                         binding.tvError.visibility = View.VISIBLE
                     }
                 }
@@ -147,9 +200,21 @@ class BookAppointmentActivity : AppCompatActivity() {
                 ) {
                     binding.progressBar.visibility = View.GONE
                     binding.btnSubmitAppointment.isEnabled = true
-                    binding.tvError.text = t.message ?: "Something went wrong"
+                    binding.tvError.text = FriendlyError.fromThrowable(t, "Request failed. Please try again.")
                     binding.tvError.visibility = View.VISIBLE
                 }
             })
+    }
+
+    private fun showRegisterVehiclePrompt() {
+        AlertDialog.Builder(this)
+            .setTitle("Vehicle required")
+            .setMessage("Please register one of your vehicles before booking an appointment.")
+            .setPositiveButton("Manage Vehicles") { _, _ ->
+                startActivity(Intent(this, ManageVehiclesActivity::class.java))
+                AppTransitions.open(this)
+            }
+            .setNegativeButton("Not now", null)
+            .show()
     }
 }

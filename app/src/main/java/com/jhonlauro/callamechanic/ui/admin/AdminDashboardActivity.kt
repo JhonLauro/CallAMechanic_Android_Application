@@ -15,6 +15,9 @@ import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.appointment.AppointmentDetailsActivity
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
+import com.jhonlauro.callamechanic.ui.common.DashboardNotification
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.NotificationPopup
 import com.jhonlauro.callamechanic.ui.common.ProfileDropdown
 import com.jhonlauro.callamechanic.ui.common.ProfilePhotoRenderer
 import com.jhonlauro.callamechanic.ui.profile.ProfileActivity
@@ -30,6 +33,7 @@ class AdminDashboardActivity : AppCompatActivity() {
     private lateinit var profileRepository: ProfileRepository
     private lateinit var activeAdapter: AdminAppointmentAdapter
     private lateinit var finishedAdapter: AdminAppointmentAdapter
+    private var notificationItems: List<DashboardNotification> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,6 +79,12 @@ class AdminDashboardActivity : AppCompatActivity() {
             showProfileMenu()
         }
 
+        binding.btnNotifications.setOnClickListener {
+            NotificationPopup.show(binding.btnNotifications, notificationItems) {
+                updateNotificationBadge()
+            }
+        }
+
         binding.btnLogoutAdmin.visibility = View.GONE
     }
 
@@ -114,7 +124,7 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         if (token.isNullOrEmpty()) {
             binding.tvEmptyStateAdmin.visibility = View.VISIBLE
-            binding.tvEmptyStateAdmin.text = "No active session found"
+            binding.tvEmptyStateAdmin.text = "Session expired. Please sign in again."
             return
         }
 
@@ -157,9 +167,10 @@ class AdminDashboardActivity : AppCompatActivity() {
 
                         binding.tvFinishedEmptyStateAdmin.visibility =
                             if (finishedAppointments.isEmpty()) View.VISIBLE else View.GONE
+                        updateNotifications(appointments)
                     } else {
                         binding.tvEmptyStateAdmin.visibility = View.VISIBLE
-                        binding.tvEmptyStateAdmin.text = "Failed to load appointments"
+                        binding.tvEmptyStateAdmin.text = FriendlyError.fromResponse(response, "Request failed. Please try again.")
                     }
                 }
 
@@ -169,9 +180,60 @@ class AdminDashboardActivity : AppCompatActivity() {
                 ) {
                     binding.progressBarAdmin.visibility = View.GONE
                     binding.tvEmptyStateAdmin.visibility = View.VISIBLE
-                    binding.tvEmptyStateAdmin.text = t.message ?: "Something went wrong"
+                    binding.tvEmptyStateAdmin.text = FriendlyError.fromThrowable(t, "Request failed. Please try again.")
                 }
             })
+    }
+
+    private fun updateNotifications(appointments: List<Appointment>) {
+        val pending = appointments
+            .filter { it.status == "PENDING" && it.mechanic == null }
+            .sortedWith(newestAppointmentFirst())
+            .take(4)
+            .map { appointment ->
+                DashboardNotification(
+                    id = "admin-pending-${appointment.id}",
+                    title = "New appointment needs assignment",
+                    message = "${appointment.client?.fullName ?: "Client"} requested ${appointment.serviceType ?: "service"} for ${appointment.vehicleInfo ?: "a vehicle"}.",
+                    tone = DashboardNotification.Tone.WARNING,
+                    time = appointment.scheduledDate
+                )
+            }
+
+        val inProgress = appointments
+            .filter { it.status == "IN_PROGRESS" }
+            .sortedWith(newestAppointmentFirst())
+            .take(3)
+            .map { appointment ->
+                DashboardNotification(
+                    id = "admin-progress-${appointment.id}",
+                    title = "Repair in progress",
+                    message = "${appointment.mechanic?.fullName ?: "Mechanic"} is handling ${appointment.vehicleInfo ?: "a vehicle"}.",
+                    tone = DashboardNotification.Tone.INFO,
+                    time = appointment.scheduledDate
+                )
+            }
+
+        val finished = appointments
+            .filter { isFinishedStatus(it.status) }
+            .sortedWith(newestAppointmentFirst())
+            .take(3)
+            .map { appointment ->
+                DashboardNotification(
+                    id = "admin-finished-${appointment.id}",
+                    title = "Service completed",
+                    message = "${appointment.vehicleInfo ?: "Vehicle"} has been marked finished.",
+                    tone = DashboardNotification.Tone.SUCCESS,
+                    time = appointment.scheduledDate
+                )
+            }
+
+        notificationItems = pending + inProgress + finished
+        updateNotificationBadge()
+    }
+
+    private fun updateNotificationBadge() {
+        NotificationPopup.updateBadge(this, binding.tvNotificationBadge, notificationItems)
     }
 
     private fun isFinishedStatus(status: String?): Boolean {

@@ -18,6 +18,9 @@ import com.jhonlauro.callamechanic.session.SessionManager
 import com.jhonlauro.callamechanic.ui.appointment.AppointmentDetailsActivity
 import com.jhonlauro.callamechanic.ui.auth.LoginActivity
 import com.jhonlauro.callamechanic.ui.common.AppTransitions
+import com.jhonlauro.callamechanic.ui.common.DashboardNotification
+import com.jhonlauro.callamechanic.ui.common.FriendlyError
+import com.jhonlauro.callamechanic.ui.common.NotificationPopup
 import com.jhonlauro.callamechanic.ui.common.ProfileDropdown
 import com.jhonlauro.callamechanic.ui.common.ProfilePhotoRenderer
 import com.jhonlauro.callamechanic.ui.profile.ProfileActivity
@@ -34,6 +37,7 @@ class MechanicDashboardActivity : AppCompatActivity() {
     private lateinit var newRequestsAdapter: MechanicAppointmentAdapter
     private lateinit var activeJobsAdapter: MechanicAppointmentAdapter
     private lateinit var finishedJobsAdapter: MechanicAppointmentAdapter
+    private var notificationItems: List<DashboardNotification> = emptyList()
     private val refreshHandler = Handler(Looper.getMainLooper())
     private val refreshRunnable = object : Runnable {
         override fun run() {
@@ -71,6 +75,12 @@ class MechanicDashboardActivity : AppCompatActivity() {
 
         binding.btnMechanicProfile.setOnClickListener {
             showProfileMenu()
+        }
+
+        binding.btnNotifications.setOnClickListener {
+            NotificationPopup.show(binding.btnNotifications, notificationItems) {
+                updateNotificationBadge()
+            }
         }
 
         binding.btnRefreshMechanic.visibility = View.GONE
@@ -132,7 +142,7 @@ class MechanicDashboardActivity : AppCompatActivity() {
     private fun loadAppointments(silent: Boolean = false) {
         val token = sessionManager.getToken()
         if (token.isNullOrEmpty()) {
-            if (!silent) showEmptyMessage("No active session found")
+        if (!silent) showEmptyMessage("Session expired. Please sign in again.")
             return
         }
 
@@ -152,7 +162,7 @@ class MechanicDashboardActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.body()?.success == true) {
                         updateDashboard(response.body()?.data ?: emptyList())
                     } else if (!silent) {
-                        showEmptyMessage("Failed to load mechanic dashboard")
+                            showEmptyMessage(FriendlyError.fromResponse(response, "Request failed. Please try again."))
                     }
                 }
 
@@ -162,7 +172,7 @@ class MechanicDashboardActivity : AppCompatActivity() {
                 ) {
                     if (!silent) {
                         binding.progressBarMechanic.visibility = View.GONE
-                        showEmptyMessage(t.message ?: "Something went wrong")
+                        showEmptyMessage(FriendlyError.fromThrowable(t, "Request failed. Please try again."))
                     }
                 }
             })
@@ -200,6 +210,50 @@ class MechanicDashboardActivity : AppCompatActivity() {
         binding.tvFinishedJobsEmpty.visibility = if (finishedJobs.isEmpty()) View.VISIBLE else View.GONE
 
         binding.tvMechanicEmptyState.visibility = View.GONE
+        updateNotifications(newRequests, activeJobs, finishedJobs)
+    }
+
+    private fun updateNotifications(
+        newRequests: List<Appointment>,
+        activeJobs: List<Appointment>,
+        finishedJobs: List<Appointment>
+    ) {
+        val newRequestUpdates = newRequests.take(4).map { appointment ->
+            DashboardNotification(
+                id = "mechanic-new-${appointment.id}",
+                title = "New service request",
+                message = "${appointment.client?.fullName ?: "Client"} requested ${appointment.serviceType ?: "service"} for ${appointment.vehicleInfo ?: "a vehicle"}.",
+                tone = DashboardNotification.Tone.WARNING,
+                time = appointment.scheduledDate
+            )
+        }
+
+        val activeUpdates = activeJobs.take(3).map { appointment ->
+            DashboardNotification(
+                id = "mechanic-active-${appointment.status}-${appointment.id}",
+                title = if (normalizeStatus(appointment.status) == "IN_PROGRESS") "Job in progress" else "Assigned job waiting",
+                message = "${appointment.vehicleInfo ?: "Vehicle"} - ${appointment.problemDescription ?: appointment.serviceType ?: "Service request"}",
+                tone = if (normalizeStatus(appointment.status) == "IN_PROGRESS") DashboardNotification.Tone.INFO else DashboardNotification.Tone.WARNING,
+                time = appointment.scheduledDate
+            )
+        }
+
+        val finishedUpdates = finishedJobs.take(3).map { appointment ->
+            DashboardNotification(
+                id = "mechanic-finished-${appointment.id}",
+                title = "Job completed",
+                message = "${appointment.vehicleInfo ?: "Vehicle"} has been marked finished.",
+                tone = DashboardNotification.Tone.SUCCESS,
+                time = appointment.scheduledDate
+            )
+        }
+
+        notificationItems = newRequestUpdates + activeUpdates + finishedUpdates
+        updateNotificationBadge()
+    }
+
+    private fun updateNotificationBadge() {
+        NotificationPopup.updateBadge(this, binding.tvNotificationBadge, notificationItems)
     }
 
     private fun claimAppointment(appointmentId: Long) {
@@ -233,7 +287,7 @@ class MechanicDashboardActivity : AppCompatActivity() {
 
             override fun onFailure(call: Call<ApiMessageResponse<Appointment>>, t: Throwable) {
                 setBusy(false)
-                Toast.makeText(this@MechanicDashboardActivity, t.message ?: "Action failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MechanicDashboardActivity, FriendlyError.fromThrowable(t, "Request failed. Please try again."), Toast.LENGTH_SHORT).show()
             }
         }
     }
