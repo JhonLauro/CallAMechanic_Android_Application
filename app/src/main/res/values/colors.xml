@@ -13,4 +13,8 @@
     <color name="cam_success_bg">#DCFCE7</color>
     <color name="cam_blue_bg">#DBEAFE</color>
     <color name="cam_danger">#EF4444</color>
+
+    <!-- aliases for older drawable/theme files -->
+    <color name="primaryPurple">#3B6EF5</color>
+    <color name="cardBorder">#D9E2F2</color>
 </resources>

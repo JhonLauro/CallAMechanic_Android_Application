@@ -34,7 +34,11 @@ class ClientDashboardActivity : AppCompatActivity() {
     private lateinit var appointmentRepository: AppointmentRepository
     private lateinit var profileRepository: ProfileRepository
     private lateinit var vehicleRepository: VehicleRepository
-    private lateinit var adapter: AppointmentAdapter
+    
+    private lateinit var inProgressAdapter: AppointmentAdapter
+    private lateinit var pendingAdapter: AppointmentAdapter
+    private lateinit var historyAdapter: AppointmentAdapter
+    
     private var currentAppointments: List<Appointment> = emptyList()
     private var currentVehicleCount: Int = 0
     private var notificationItems: List<DashboardNotification> = emptyList()
@@ -49,13 +53,7 @@ class ClientDashboardActivity : AppCompatActivity() {
         profileRepository = ProfileRepository()
         vehicleRepository = VehicleRepository()
 
-        adapter = AppointmentAdapter(emptyList()) { appointment ->
-            openAppointmentDetails(appointment)
-        }
-
-        binding.rvAppointments.layoutManager = LinearLayoutManager(this)
-        binding.rvAppointments.adapter = adapter
-        binding.rvAppointments.setHasFixedSize(false)
+        setupRecyclerViews()
 
         binding.tvWelcome.text = "Welcome, ${sessionManager.getFullName() ?: "Client"}"
         renderProfilePhoto()
@@ -81,6 +79,23 @@ class ClientDashboardActivity : AppCompatActivity() {
         }
 
         binding.btnLogout.visibility = View.GONE
+    }
+
+    private fun setupRecyclerViews() {
+        inProgressAdapter = AppointmentAdapter(emptyList()) { openAppointmentDetails(it) }
+        binding.rvInProgress.layoutManager = LinearLayoutManager(this)
+        binding.rvInProgress.adapter = inProgressAdapter
+        binding.rvInProgress.setHasFixedSize(false)
+
+        pendingAdapter = AppointmentAdapter(emptyList()) { openAppointmentDetails(it) }
+        binding.rvPending.layoutManager = LinearLayoutManager(this)
+        binding.rvPending.adapter = pendingAdapter
+        binding.rvPending.setHasFixedSize(false)
+
+        historyAdapter = AppointmentAdapter(emptyList()) { openAppointmentDetails(it) }
+        binding.rvAppointments.layoutManager = LinearLayoutManager(this)
+        binding.rvAppointments.adapter = historyAdapter
+        binding.rvAppointments.setHasFixedSize(false)
     }
 
     override fun onResume() {
@@ -138,18 +153,21 @@ class ClientDashboardActivity : AppCompatActivity() {
                         val appointments = (response.body()?.data ?: emptyList())
                             .sortedWith(newestAppointmentFirst())
                         currentAppointments = appointments
-                        adapter.updateData(appointments)
+                        
+                        val inProgressList = appointments.filter { it.status == "IN_PROGRESS" }
+                        val pendingList = appointments.filter { it.status == "PENDING" }
+                        val historyList = appointments.filter { it.status == "COMPLETED" || it.status == "FINISHED" || it.status == "CANCELLED" }
 
-                        val activeCount = appointments.count {
-                            it.status == "PENDING" || it.status == "IN_PROGRESS"
-                        }
+                        inProgressAdapter.updateData(inProgressList)
+                        pendingAdapter.updateData(pendingList)
+                        historyAdapter.updateData(historyList)
 
-                        val completedCount = appointments.count {
-                            it.status == "COMPLETED" || it.status == "FINISHED"
-                        }
+                        binding.sectionInProgress.visibility = if (inProgressList.isNotEmpty()) View.VISIBLE else View.GONE
+                        binding.sectionPending.visibility = if (pendingList.isNotEmpty()) View.VISIBLE else View.GONE
 
-                        binding.tvActiveServices.text = activeCount.toString()
-                        binding.tvCompletedServices.text = completedCount.toString()
+                        binding.tvActiveServices.text = (inProgressList.size + pendingList.size).toString()
+                        binding.tvCompletedServices.text = historyList.count { it.status != "CANCELLED" }.toString()
+
                         if (appointments.isEmpty()) {
                             binding.tvEmptyState.visibility = View.VISIBLE
                             binding.tvEmptyState.text = "No service history yet. Book your first appointment!"

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/bookAppointmentRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_page_background"
@@ -12,110 +13,36 @@
         android:padding="18dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_secondary_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:minWidth="140dp"
+            android:orientation="horizontal"
+            android:paddingStart="14dp"
+            android:paddingEnd="16dp">
 
-            <FrameLayout
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/bg_toolbar_icon"
-                android:padding="8dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:contentDescription="App Logo"
-                    android:src="@drawable/ic_cam_logo" />
-            </FrameLayout>
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginEnd="7dp"
+                android:src="@drawable/ic_arrow_back" />
 
             <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:text="Call-A-Mechanic"
-                android:textColor="@color/cam_text"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/btnCancel"
                 android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:background="@drawable/bg_secondary_button"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:minWidth="92dp"
-                android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:paddingEnd="14dp">
-
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_marginEnd="7dp"
-                    android:src="@drawable/ic_arrow_back" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Back"
-                    android:textColor="@color/cam_primary"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <FrameLayout
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:background="@drawable/bg_chip_blue"
-                android:padding="12dp">
-
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@drawable/ic_clock" />
-            </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Book an Appointment"
-                    android:textColor="@color/cam_text"
-                    android:textSize="26sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Schedule your vehicle service with our certified mechanics"
-                    android:textColor="@color/cam_subtext"
-                    android:textSize="14sp" />
-            </LinearLayout>
+                android:text="Back to Dashboard"
+                android:textColor="@color/cam_primary"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="18dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/bg_stat_card"
             android:orientation="vertical"
             android:padding="20dp">
@@ -123,6 +50,23 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="Book an Appointment"
+                android:textColor="@color/cam_text"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Schedule your vehicle service with our certified mechanics"
+                android:textColor="@color/cam_subtext"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:text="Service Type"
                 android:textColor="@color/cam_text"
                 android:textStyle="bold" />
@@ -133,13 +77,16 @@
                 android:layout_height="52dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_input"
-                android:hint="e.g. Brake Service"
+                android:drawableEnd="@android:drawable/arrow_down_float"
+                android:focusable="false"
+                android:hint="Select service type..."
+                android:inputType="none"
                 android:padding="14dp"
                 android:textColor="@color/cam_text"
                 android:textColorHint="@color/cam_subtext" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
                 android:text="Vehicle Information"
@@ -152,7 +99,7 @@
                 android:layout_height="52dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_input"
-                android:clickable="true"
+                android:drawableEnd="@android:drawable/arrow_down_float"
                 android:focusable="false"
                 android:hint="Tap to select a registered vehicle"
                 android:inputType="none"
@@ -160,42 +107,88 @@
                 android:textColor="@color/cam_text"
                 android:textColorHint="@color/cam_subtext" />
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:text="Problem Description"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Preferred Date"
+                        android:textColor="@color/cam_text"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etPreferredDate"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_input"
+                        android:focusable="false"
+                        android:hint="Select date"
+                        android:inputType="none"
+                        android:padding="14dp"
+                        android:textColor="@color/cam_text"
+                        android:textColorHint="@color/cam_subtext" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Preferred Time"
+                        android:textColor="@color/cam_text"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etPreferredTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_marginTop="8dp"
+                        android:background="@drawable/bg_input"
+                        android:drawableEnd="@android:drawable/arrow_down_float"
+                        android:focusable="false"
+                        android:hint="Select time"
+                        android:inputType="none"
+                        android:padding="14dp"
+                        android:textColor="@color/cam_text"
+                        android:textColorHint="@color/cam_subtext" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:text="Describe the Problem"
                 android:textColor="@color/cam_text"
                 android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/etProblemDescription"
                 android:layout_width="match_parent"
-                android:layout_height="110dp"
+                android:layout_height="120dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_input"
                 android:gravity="top"
-                android:hint="Tell us what is wrong with your vehicle"
-                android:padding="14dp"
-                android:textColor="@color/cam_text"
-                android:textColorHint="@color/cam_subtext" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Scheduled Date"
-                android:textColor="@color/cam_text"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/etScheduledDate"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_input"
-                android:hint="YYYY-MM-DD"
-                android:inputType="date"
+                android:hint="Tell us what's wrong with your vehicle..."
+                android:inputType="textMultiLine"
+                android:minLines="4"
                 android:padding="14dp"
                 android:textColor="@color/cam_text"
                 android:textColorHint="@color/cam_subtext" />
@@ -213,19 +206,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="14dp"
                 android:visibility="gone" />
 
-            <TextView
+            <Button
                 android:id="@+id/btnSubmitAppointment"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
                 android:layout_marginTop="18dp"
                 android:background="@drawable/bg_primary_button"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
+                android:backgroundTint="@null"
                 android:text="Submit Booking"
+                android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textStyle="bold" />
         </LinearLayout>

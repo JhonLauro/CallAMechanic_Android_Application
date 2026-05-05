@@ -8,4 +8,24 @@
         <item name="android:navigationBarColor">@color/cam_white</item>
         <item name="android:windowLightNavigationBar">true</item>
     </style>
+    <style name="CustomAlertDialogTheme" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="android:background">@drawable/bg_dialog_rounded</item>
+        <item name="colorPrimary">@color/cam_primary</item>
+        <item name="colorSecondary">@color/cam_primary</item>
+        <item name="android:textColorPrimary">@color/cam_text</item>
+        <item name="android:textColorSecondary">@color/cam_subtext</item>
+        <item name="buttonBarPositiveButtonStyle">@style/CustomDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/CustomDialogButton</item>
+    </style>
+
+    <style name="CustomDialogButton" parent="Widget.Material3.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/cam_primary</item>
+    </style>
+
+    <style name="CustomDatePickerDialog" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="colorAccent">@color/cam_primary</item>
+        <item name="android:colorAccent">@color/cam_primary</item>
+        <item name="android:windowBackground">@drawable/bg_dialog_rounded</item>
+    </style>
+
 </resources>
