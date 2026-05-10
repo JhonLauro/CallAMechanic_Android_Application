@@ -274,6 +274,7 @@ class AdminDashboardActivity : AppCompatActivity() {
             putExtra(AppointmentDetailsActivity.EXTRA_PROBLEM, appointment.problemDescription)
             putExtra(AppointmentDetailsActivity.EXTRA_SCHEDULE, appointment.scheduledDate)
             putExtra(AppointmentDetailsActivity.EXTRA_MECHANIC, appointment.mechanic?.fullName ?: "Unassigned")
+            putExtra(AppointmentDetailsActivity.EXTRA_MECHANIC_ID, appointment.mechanic?.id ?: -1L)
         })
         AppTransitions.open(this)
     }
