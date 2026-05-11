@@ -1,8 +1,12 @@
 package com.jhonlauro.callamechanic.ui.appointment
 
 import android.os.Bundle
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
-import android.widget.ArrayAdapter
+import android.widget.LinearLayout
+import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jhonlauro.callamechanic.R
@@ -28,6 +32,7 @@ class AppointmentDetailsActivity : AppCompatActivity() {
     private var selectedMechanicId: Long = -1L
     private var currentStatus: String? = null
     private var appointmentId: Long = -1L
+    private var adminActionInFlight = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,10 +72,17 @@ class AppointmentDetailsActivity : AppCompatActivity() {
     }
 
     private fun setupAdminActions() {
+        binding.mechanicPicker.setOnClickListener {
+            if (mechanics.isEmpty()) {
+                showMessage("No mechanics available yet.")
+            } else {
+                showMechanicMenu()
+            }
+        }
+
         binding.btnAssignMechanic.setOnClickListener {
             val token = sessionManager.getToken()
-            val selectedPosition = binding.spinnerMechanics.selectedItemPosition
-            val mechanic = mechanics.getOrNull(selectedPosition - 1)
+            val mechanic = mechanics.firstOrNull { it.id == selectedMechanicId }
 
             if (token.isNullOrBlank()) {
                 showMessage("Session expired. Please sign in again.")
@@ -144,33 +156,24 @@ class AppointmentDetailsActivity : AppCompatActivity() {
     }
 
     private fun renderMechanicPicker() {
-        val labels = mutableListOf("Select a mechanic...")
-        labels.addAll(mechanics.map { mechanic ->
-            val name = mechanic.fullName ?: "Mechanic"
-            val code = mechanic.mechanicId ?: "No ID"
-            "$name ($code)"
-        })
-
-        binding.spinnerMechanics.adapter = ArrayAdapter(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            labels
-        )
         preselectAssignedMechanic()
+        binding.tvSelectedMechanic.text = mechanics
+            .firstOrNull { it.id == selectedMechanicId }
+            ?.let { mechanicLabel(it) }
+            ?: "Select a mechanic..."
         binding.btnAssignMechanic.text =
             if (selectedMechanicId > 0L) "Reassign Mechanic" else "Assign Mechanic"
     }
 
     private fun preselectAssignedMechanic() {
         if (selectedMechanicId <= 0L || mechanics.isEmpty()) return
-        val index = mechanics.indexOfFirst { it.id == selectedMechanicId }
-        if (index >= 0) {
-            binding.spinnerMechanics.setSelection(index + 1)
+        if (mechanics.none { it.id == selectedMechanicId }) {
+            selectedMechanicId = -1L
         }
     }
 
     private fun updateStatus(status: String) {
-        if (currentStatus == status) return
+        if (currentStatus == status || adminActionInFlight) return
         val token = sessionManager.getToken()
         if (token.isNullOrBlank()) {
             showMessage("Session expired. Please sign in again.")
@@ -204,11 +207,11 @@ class AppointmentDetailsActivity : AppCompatActivity() {
     }
 
     private fun setAdminControlsEnabled(enabled: Boolean) {
+        adminActionInFlight = !enabled
+        binding.btnAssignMechanic.alpha = if (enabled) 1f else 0.65f
+        binding.mechanicPicker.isEnabled = enabled
         binding.btnAssignMechanic.isEnabled = enabled
-        binding.btnStatusPending.isEnabled = enabled && currentStatus != "PENDING"
-        binding.btnStatusProgress.isEnabled = enabled && currentStatus != "IN_PROGRESS"
-        binding.btnStatusFinished.isEnabled = enabled && !isFinishedStatus(currentStatus)
-        binding.spinnerMechanics.isEnabled = enabled
+        renderStatusButtons()
     }
 
     private fun renderStatus(status: String?) {
@@ -217,9 +220,76 @@ class AppointmentDetailsActivity : AppCompatActivity() {
     }
 
     private fun renderStatusButtons() {
-        binding.btnStatusPending.isEnabled = currentStatus != "PENDING"
-        binding.btnStatusProgress.isEnabled = currentStatus != "IN_PROGRESS"
-        binding.btnStatusFinished.isEnabled = !isFinishedStatus(currentStatus)
+        renderStatusButton(binding.btnStatusPending, currentStatus == "PENDING")
+        renderStatusButton(binding.btnStatusProgress, currentStatus == "IN_PROGRESS")
+        renderStatusButton(binding.btnStatusFinished, isFinishedStatus(currentStatus))
+    }
+
+    private fun renderStatusButton(button: TextView, selected: Boolean) {
+        button.setBackgroundResource(
+            if (selected) R.drawable.bg_admin_status_active else R.drawable.bg_admin_status_idle
+        )
+        button.setTextColor(getColor(if (selected) R.color.cam_on_primary else R.color.cam_primary))
+        button.alpha = if (adminActionInFlight) 0.65f else 1f
+        button.isEnabled = !adminActionInFlight
+    }
+
+    private fun showMechanicMenu() {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundResource(R.drawable.bg_admin_dropdown)
+            elevation = dp(10).toFloat()
+            setPadding(dp(4), dp(4), dp(4), dp(4))
+        }
+
+        mechanics.forEach { mechanic ->
+            container.addView(TextView(this).apply {
+                text = mechanicLabel(mechanic)
+                setTextColor(getColor(R.color.cam_text))
+                textSize = 14f
+                minHeight = dp(46)
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(dp(14), 0, dp(14), 0)
+                if (mechanic.id == selectedMechanicId) {
+                    setBackgroundResource(R.drawable.bg_admin_dropdown_item_selected)
+                    setTextColor(getColor(R.color.cam_primary))
+                    setTypeface(typeface, android.graphics.Typeface.BOLD)
+                }
+            })
+        }
+
+        val popup = PopupWindow(
+            container,
+            binding.mechanicPicker.width,
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            true
+        ).apply {
+            setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            isOutsideTouchable = true
+            elevation = dp(12).toFloat()
+        }
+
+        for (index in 0 until container.childCount) {
+            container.getChildAt(index).setOnClickListener {
+                val mechanic = mechanics[index]
+                selectedMechanicId = mechanic.id
+                binding.tvSelectedMechanic.text = mechanicLabel(mechanic)
+                binding.btnAssignMechanic.text = "Reassign Mechanic"
+                popup.dismiss()
+            }
+        }
+
+        popup.showAsDropDown(binding.mechanicPicker, 0, dp(6))
+    }
+
+    private fun mechanicLabel(mechanic: AdminUser): String {
+        val name = mechanic.fullName ?: "Mechanic"
+        val code = mechanic.mechanicId ?: "No ID"
+        return "$name ($code)"
+    }
+
+    private fun dp(value: Int): Int {
+        return (value * resources.displayMetrics.density).toInt()
     }
 
     private fun showMessage(message: String) {

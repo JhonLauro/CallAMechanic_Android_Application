@@ -2,6 +2,7 @@
 <resources>
     <color name="cam_bg">#07111F</color>
     <color name="cam_white">#0F1F36</color>
+    <color name="cam_on_primary">#FFFFFF</color>
     <color name="cam_text">#EAF2FF</color>
     <color name="cam_subtext">#9FB4D2</color>
     <color name="cam_primary">#60A5FA</color>

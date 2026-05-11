@@ -367,52 +367,116 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="14dp"
             android:layout_marginBottom="24dp"
-            android:background="@drawable/bg_stat_card"
+            android:background="@drawable/bg_admin_controls_panel"
             android:orientation="vertical"
-            android:padding="18dp"
+            android:padding="20dp"
             android:visibility="gone">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Admin Controls"
-                android:textColor="@color/cam_text"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="Assigned Mechanic"
-                android:textColor="@color/cam_subtext"
-                android:textSize="12sp"
-                android:textStyle="bold" />
+                <LinearLayout
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:background="@drawable/bg_admin_controls_badge"
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-            <Spinner
-                android:id="@+id/spinnerMechanics"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/bg_input"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp" />
+                    <ImageView
+                        android:layout_width="21dp"
+                        android:layout_height="21dp"
+                        android:contentDescription="Admin controls"
+                        android:src="@drawable/ic_wrench"
+                        android:tint="@color/cam_primary" />
+                </LinearLayout>
 
-            <Button
-                android:id="@+id/btnAssignMechanic"
-                android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_primary_button"
-                android:text="Assign Mechanic"
-                android:textAllCaps="false"
-                android:textColor="@color/cam_white"
-                android:textStyle="bold" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Admin Controls"
+                        android:textColor="@color/cam_text"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Assignment and job status controls"
+                        android:textColor="@color/cam_subtext"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
+                android:text="Assigned Mechanic"
+                android:textColor="@color/cam_subtext"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/mechanicPicker"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_admin_picker"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <TextView
+                    android:id="@+id/tvSelectedMechanic"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Select a mechanic..."
+                    android:textColor="@color/cam_text"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvMechanicPickerChevron"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="v"
+                    android:textColor="@color/cam_subtext"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnAssignMechanic"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_primary_button"
+                android:text="Assign Mechanic"
+                android:textAllCaps="false"
+                android:textColor="@color/cam_on_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:text="Update Status"
                 android:textColor="@color/cam_subtext"
                 android:textSize="12sp"
@@ -424,41 +488,39 @@
                 android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
-                <Button
+                <TextView
                     android:id="@+id/btnStatusPending"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_secondary_button"
+                    android:background="@drawable/bg_admin_status_idle"
+                    android:gravity="center"
                     android:text="Pending"
-                    android:textAllCaps="false"
-                    android:textColor="@color/cam_primary"
+                    android:textColor="@color/cam_text"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/btnStatusProgress"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_secondary_button"
+                    android:background="@drawable/bg_admin_status_idle"
+                    android:gravity="center"
                     android:text="In Progress"
-                    android:textAllCaps="false"
-                    android:textColor="@color/cam_primary"
                     android:textSize="12sp"
                     android:textStyle="bold" />
 
-                <Button
+                <TextView
                     android:id="@+id/btnStatusFinished"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_secondary_button"
+                    android:background="@drawable/bg_admin_status_idle"
+                    android:gravity="center"
                     android:text="Finished"
-                    android:textAllCaps="false"
-                    android:textColor="@color/cam_primary"
                     android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
